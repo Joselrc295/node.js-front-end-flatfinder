@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { getDocs, query, where, collection , doc , deleteDoc } from "firebase/firestore";
 import { db } from "../Firebase";
 import Button from "@mui/material/Button";
+import Api from "../services/api";
 
 // @Params: type: "my-flats" | "all-flats" | "favorite-flats"
 export default function UsersTable() {
@@ -140,9 +141,9 @@ export default function UsersTable() {
   //       return flatsB - flatsA
   //     }
   //   })
-    setUsers(sortedData) ; 
-    setIsAscending(!isAscending)
-  }
+  //  setUsers(sortedData) ; 
+  //  setIsAscending(!isAscending)
+  //}
   
 
   useEffect(() => {
@@ -231,12 +232,12 @@ export default function UsersTable() {
         >
           <TableHead className="bg-gray-50">
             <TableRow>
-              <TableCell style={{ cursor: "pointer" }} onClick={nameSort} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <TableCell style={{ cursor: "pointer" }}/* onClick={nameSort}*/ className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               &lt; First Name&gt;
               </TableCell>
               <TableCell
               style={{ cursor: "pointer" }}
-                onClick={lastNameSort}
+                //onClick={lastNameSort}
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 align="right"
               >
@@ -264,7 +265,7 @@ export default function UsersTable() {
               style={{ cursor: "pointer" }}
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 align="right"
-                onClick={flatSort}
+                //onClick={flatSort}
                 
               >
                &lt; Flats Count&gt;
@@ -310,9 +311,9 @@ export default function UsersTable() {
                     Edit
                   </Button>
                 </TableCell>
-                <TableCell className="px-6 py-4 whitespace-nowrap">
-                  <Button onClick={() => removeFlat(row.id)}>Delete</Button>
-                </TableCell>
+               <TableCell className="px-6 py-4 whitespace-nowrap">
+                <Button /*onClick={() => removeFlat(row.id)}*/>Delete</Button>
+                </TableCell> 
               </TableRow>
             ))}
           </TableBody>

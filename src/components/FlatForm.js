@@ -5,8 +5,11 @@ import { db } from "../Firebase";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Alert from '@mui/material/Alert'
+import Api from "../services/api";
+
+
 export default function FlatForm({ type, id}) {
- 
+  const api = new Api()
   const [flatLoaded, setFlatLoaded] = useState(false);
   const currentDate = new Date().toJSON().slice(0, 10);
   const flatsRef = collection(db, "flats");
@@ -114,8 +117,8 @@ export default function FlatForm({ type, id}) {
       rentPrice: parseInt(rentPrice.current.value),
       dateAvailable: dateAvailable.current.value,
       user:(localStorage.getItem("user_logged")),
-      nameUser: dataUser.data().firstName,
-      emailUser: dataUser.data().email
+      //nameUser: dataUser.data().firstName,
+      //emailUser: dataUser.data().email
     }
     
     console.log(onlyLetters(),forCity() ,forStreet(), onlyNumbers(),  yearBuilt.current.value);
@@ -138,7 +141,9 @@ export default function FlatForm({ type, id}) {
         
         await updateDoc(refFlat , flatForSubmit )
 
-      }else{ await addDoc(flatsRef, flatForSubmit);}
+      }else{ 
+        
+      const result =   await api.post("flats" ,flatForSubmit);}
       setShowAlert(true);
       setTimeout(() => {
         navigate("/my-flats", { replace: false });
@@ -153,8 +158,8 @@ export default function FlatForm({ type, id}) {
   const userId = responseFlat.user;
   const refUser = doc(db, "users", userId);
   const dataUser = await getDoc(refUser);
-  responseFlat.firstName = dataUser.data().firstName;
-  responseFlat.lastName = dataUser.data().lastName;
+  //responseFlat.firstName = dataUser.data().firstName;
+  //responseFlat.lastName = dataUser.data().lastName;
   setFlat(responseFlat);
   setFlatLoaded(true);
 };
@@ -194,9 +199,9 @@ export default function FlatForm({ type, id}) {
             Create Your Flat
           </Typography>
         )}
-        {type === "view"&&(
+        {/*type === "view"&&(
           <Typography variant="h6">Flat Owner: {flat.firstName} {flat.lastName} </Typography>
-        )}
+        )*/}
           <br />
           {showAlert && <Alert severity="success">You have created a new flat.</Alert>}
           <div className="flex flex-col md:flex-row lg:flex-row">
