@@ -12,6 +12,7 @@ import Button from "@mui/material/Button";
 import { useState } from "react";
 import { useEffect } from "react";
 import { db } from "../Firebase";
+import Api from "../services/api";
 import {
   collection,
   getDocs,
@@ -52,6 +53,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const TableFlats = ({ type ,  user, setUser}) => {
+  const api = new Api()
   const refFav = collection(db, "favorites");
   const userId =(localStorage.getItem("user_logged"));
   const [flats, setFlats] = useState([]);
@@ -102,7 +104,10 @@ const TableFlats = ({ type ,  user, setUser}) => {
       setFlats(allFlats);
     }
     if (type === "all-flats") {
-      if (city) {
+      let allFlats = [] ;
+      const response = await api.get('flats');
+      allFlats = response.data.data
+     /* if (city) {
         arrayWhere.push(where("city", "==", city));
       }
       if (areaSize) {
@@ -132,9 +137,8 @@ const TableFlats = ({ type ,  user, setUser}) => {
         }
         const flatWhitFav = { ...item.data(), id: item.id, favorite: favorite };
         allFlats.push(flatWhitFav);
-      }
+      }*/
       
-
       setFlats(allFlats);
     }
     setLoading(false);
