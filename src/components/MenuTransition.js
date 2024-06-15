@@ -24,6 +24,7 @@
     const logout = () => {
       // Remove user information from localStorage
       localStorage.removeItem("user_logged");
+      localStorage.removeItem("user_data_logged");
       setUser("");
       // Redirect to the login page
       navigate("/", { replace: false });
