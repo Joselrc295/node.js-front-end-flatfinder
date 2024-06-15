@@ -19,136 +19,29 @@ export default function UsersTable() {
   const ref = collection(db, "users");
   const refFlats = collection(db, "flats");
   const [userType, setUserType] = useState("");
-  const [flatsCounter, setFlatsCounter] = useState(0);
+  const [flatsCounter, setFlatsCounter] = useState("");
   const [valueSlider, setValueSlider] = React.useState([18, 120]);
   const [users, setUsers] = useState([]);
   const [isAscending, setIsAscending] = useState(true);
   const [flag , setFlag] = useState(false)
 
-  const getData = async()=>{
-    let filter = "";
-    if (userType) {
-      filter += `filter="${userType}`
-    }
-    let page =0
-    const api = new Api(
-  
-    );
-    const result = await api.get("users/?"+filter);
-    console.log(result);
-    const userSet = result.data.data
-  }
-
-
-  // const today = new Date();
-  // const minBirthDate = new Date(
-  //   today.getFullYear() - valueSlider[0],
-  //   today.getMonth(),
-  //   today.getDate()
-  // )
-  //   .toISOString()
-  //   .split("T")[0];
-  // const maxBirthDate = new Date(
-  //   today.getFullYear() - valueSlider[1],
-  //   today.getMonth(),
-  //   today.getDate()
-  // )
-  //   .toISOString()
-  //   .split("T")[0];
-  // if (valueSlider && valueSlider.length > 1) {
-  //   arrayWhere.push(where("birthday", ">=", maxBirthDate));
-  //   arrayWhere.push(where("birthday", "<=", minBirthDate));
-  // }
-  // const getData = async () => {
-  //   let searchUsers = query(ref, ...arrayWhere);
-  //   const data = await getDocs(searchUsers);
-  //   const usersSet = [];
-    // Conjunto para almacenar usuarios únicos
-
-  //   // Iterar sobre los usuarios y agregarlos al conjunto
-  //   for (const item of data.docs) {
-  //     const search = query(refFlats, where("user", "==", item.id));
-  //     const dataFlats = await getDocs(search);
-  //     if (flatsCounter) {
-  //       const flatsValue = flatsCounter.split("-");
-  //       if (flatsValue.length > 1) {
-  //         const min = flatsValue[0];
-  //         const max = flatsValue[1];
-  //         if (dataFlats.docs?.length < min || dataFlats.docs?.length > max) {
-  //           continue;
-  //         }
-  //       } else {
-  //         if (flatsValue[0] === "61+") {
-  //           if (dataFlats.docs?.length < 61) {
-  //             continue;
-  //           }
-  //         }
-  //       }
-  //     }
-  //     const userWithFlats = {
-  //       ...item.data(),
-  //       id: item.id,
-  //       flats: dataFlats.docs?.length,
-  //     };
-  //     usersSet.push(userWithFlats);
-  //   }
-
-  //   setUsers(usersSet);
+  const getData = async () => {
+    // let filter = `role=${userType}&flatCountMin=${flatsCounter.split('-')[0]}&flatCountMax=${flatsCounter.split('-')[1]}&ageMin=${valueSlider[0]}&ageMax=${valueSlider[1]}`;
     
-  // };
-  // const removeFlat = async (id) =>{
-  //   const refRemove = doc(db , 'users' , id) ;
-  //   await deleteDoc(refRemove) ;
-  //   setFlag(!flag)
-  // }
-  // const nameSort = () =>{
-  //   const sortedData = [...users]
-  //   sortedData.sort((a , b) =>{
-  //     const  nameA = a.firstName.toLowerCase()
-  //     const  nameB = b.firstName.toLowerCase()
-  //     if(isAscending){
-  //       return  nameA.localeCompare(nameB)
-  //     }else{
-  //       return nameB.localeCompare(nameA);
-  //     }
-  //   })
-  //   setUsers(sortedData)
-  //   setIsAscending(!isAscending);
-  // }
-  // const lastNameSort = () =>{
-  //   const sortedData = [...users]
-  //   sortedData.sort((a , b) =>{
-  //     const  nameA = a.lastName.toLowerCase()
-  //     const  nameB = b.lastName.toLowerCase()
-  //     if(isAscending){
-  //       return  nameA.localeCompare(nameB)
-  //     }else{
-  //       return nameB.localeCompare(nameA);
-  //     }
-  //   })
-  //   setUsers(sortedData)
-  //   setIsAscending(!isAscending);
-  // };
-  
-  // const flatSort = () =>{
-  //   const sortedData = [...users]
-  //   sortedData.sort((a , b)=>{
-  //     const flatsA = a.flats
-  //     const flatsB = b.flats
-  //     if(isAscending){
-  //       return flatsA - flatsB
-  //     }else{
-  //       return flatsB - flatsA
-  //     }
-  //   })
-  //  setUsers(sortedData) ; 
-  //  setIsAscending(!isAscending)
-  //}
-  
+    const api = new Api();
+    try {
+      const result = await api.get("users");
+      console.log(result);
+      setUsers(result.data.data);
+
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  }
 
   useEffect(() => {
     getData();
-  }, [userType, flatsCounter, valueSlider , flag]);
+  }, [userType, flatsCounter, valueSlider]);
 
   return (  
     <div>
@@ -286,7 +179,7 @@ export default function UsersTable() {
           </TableHead>
           <TableBody className="bg-white divide-y divide-gray-200">
             {users.map((row) => (
-              <TableRow key={row.id}>
+              <TableRow key={row._id}>
                 <TableCell className="px-6 py-4 whitespace-nowrap">
                   {row.firstName}
                 </TableCell>
@@ -304,7 +197,7 @@ export default function UsersTable() {
                 </TableCell>
 
                 <TableCell className="px-6 py-4 whitespace-nowrap">
-                  {row.flats}
+                  {row.flatCount}
                 </TableCell>
                 <TableCell className="px-6 py-4 whitespace-nowrap">
                   <Button href={`update-profile/${row.id}`} variant="contained">

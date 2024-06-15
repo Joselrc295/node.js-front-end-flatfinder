@@ -147,14 +147,25 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
       // const docRef = await addDoc(refCreate, user);
       const api = new Api();
       const result=    await api.post ("users/register", user)
-
-    const useDocRef =result.data.data._id;
-      localStorage.setItem("user_logged", (useDocRef));
-      showAlertMessage("success", "User created successfully.");
-      setTimeout(() => {
-       navigate("/dashboard", { replace: true });
-     }, 2000);
-    }
+      const message = result.data.message;
+      const data = result.data.data;
+      const token = result.data.token;
+      if(message === 'User created successfully' && token){
+        localStorage.setItem("user_logged", (token));
+        localStorage.setItem("user_data_logged", JSON.stringify(data));
+        showAlertMessage("success", "User created successfully.")
+        setTimeout(() => {
+          navigate("/dashboard", { replace: true });
+        }, 2000);
+      }
+    // const useDocRef =result.data.data._id;
+    //   localStorage.setItem("user_logged", (useDocRef));
+    //   showAlertMessage("success", "User created successfully.");
+    //   setTimeout(() => {
+    //    navigate("/dashboard", { replace: true });
+    //  }, 2000);
+    // }
+}
     if (type === "update") {
       await updateDoc(ref, {
         firstName: user.firstName,

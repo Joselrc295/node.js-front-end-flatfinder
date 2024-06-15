@@ -20,6 +20,7 @@ import { useState } from "react";
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 import Api from "../services/api"
+import { LocalSeeSharp } from "@mui/icons-material";
 
 function Copyright(props) {
   return (
@@ -78,6 +79,7 @@ export default function LogIn() {
         console.log("login successful");
         showAlertMessage("success", "Login successful");
         localStorage.setItem("user_logged", (result.data.token));
+        localStorage.setItem("user_data_logged", JSON.stringify(result.data.data));
         setTimeout(() => {
           navigate("/dashboard", { replace: true });
         }, 2000); // Redirigir al dashboard después de 2 segundos

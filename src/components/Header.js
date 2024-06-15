@@ -20,6 +20,7 @@ export default function Header() {
 
   const getUserData = async () => {
     const responseUser = await getUserLogged();
+    console.log(responseUser)
     setUser(responseUser);
   };
   useEffect(() => {
