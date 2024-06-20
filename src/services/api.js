@@ -17,5 +17,8 @@ export default class Api {
   get = (url) => {
     return axios.get(this.urlBase + url);
     }; 
+  patch =(url, data)=>{
+    return axios.patch(this.urlBase + url, data);
+  }
 }
 

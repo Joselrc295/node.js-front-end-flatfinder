@@ -200,7 +200,7 @@ export default function UsersTable() {
                   {row.flatCount}
                 </TableCell>
                 <TableCell className="px-6 py-4 whitespace-nowrap">
-                  <Button href={`update-profile/${row.id}`} variant="contained">
+                  <Button href={`update-profile/${row._id}`} variant="contained">
                     Edit
                   </Button>
                 </TableCell>

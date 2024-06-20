@@ -62,7 +62,6 @@ export default function LogIn() {
   };
  
 
-
   const login = async (e) => {
     e.preventDefault();
     setIsProgress(true);
