@@ -81,12 +81,15 @@ const TableFlats = ({ type ,  user, setUser}) => {
     let arrayWhere = [];
 
     if (type === "my-flats") {
-      const search = query(ref, where("user", "==", userId));
+      let allFlats = []
+      const response = await api.get('flats/my')
+      allFlats = response.data.data
+     /* const search = query(ref, where("user", "==", userId));
       const data = await getDocs(search);
       const forRowsMy = data.docs.map((item) => {
         return { ...item.data(), id: item.id };
-      });
-      setFlats(forRowsMy);
+      });*/
+      setFlats(allFlats);
     }
     if (type === "favorite-flats") {
       const search = query(refFav, where("userId", "==", userId));
