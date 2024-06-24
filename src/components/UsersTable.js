@@ -23,21 +23,56 @@ export default function UsersTable() {
   const [valueSlider, setValueSlider] = React.useState([18, 120]);
   const [users, setUsers] = useState([]);
   const [isAscending, setIsAscending] = useState(true);
-  const [flag , setFlag] = useState(false)
+  const [flag , setFlag] = useState(false);
+
+ 
+
+  const removeUser = async (_id) => {
+    try {
+      const api = new Api();
+      const response = await api.delete(`users/delete/${_id}`);
+      if (response.status === 200) {
+        console.log(response.data.message);    
+        getData();
+      } else {
+        console.error("Error deleting user:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
+  };
 
   const getData = async () => {
     // let filter = `role=${userType}&flatCountMin=${flatsCounter.split('-')[0]}&flatCountMax=${flatsCounter.split('-')[1]}&ageMin=${valueSlider[0]}&ageMax=${valueSlider[1]}`;
-    
+   
+    let filter =''
+     if (userType) {
+      filter = `filter[role]=${userType}`
+     }
+     if (flatsCounter) {
+      if (filter){
+        filter+='&'
+      }
+      filter = `filter[flatCountMin]=${flatsCounter.split('-')[0]}&filter[flatCountMax]=${flatsCounter.split('-')[1]}`
+     }
+     if(valueSlider){
+      if (filter){
+        filter+='&'
+      }
+      filter = `filter[ageMin]=${valueSlider[0]}&filter[ageMax]=${valueSlider[1]}`
+     }
     const api = new Api();
-    try {
-      const result = await api.get("users");
-      console.log(result);
-      setUsers(result.data.data);
+    const result = await api.get('users/?'+filter)
+    setUsers(result.data.data)
+  //   try {
+  //     const result = await api.get("users");
+  //     console.log(result);
+  //     setUsers(result.data.data);
 
-    } catch (error) {
-      console.error("Error fetching data: ", error);
-    }
-  }
+  //   } catch (error) {
+  //     console.error("Error fetching data: ", error);
+  //   }
+}
 
   useEffect(() => {
     getData();
@@ -105,16 +140,16 @@ export default function UsersTable() {
         <Typography id="input-slider" gutterBottom>
           Age
         </Typography>
-        <Slider
-          max={120}
-          min={18}
-          step={5}
-          value={valueSlider}
-          onChange={(e, newValue) => setValueSlider(newValue)}
-          getAriaLabel={() => "Age Range"}
-          valueLabelDisplay="auto"
-          className="flex-grow"
-        />
+          <Slider
+            max={120}
+            min={18}
+            step={5}
+            value={valueSlider}
+            onChange={(e, newValue) => setValueSlider(newValue)}
+            getAriaLabel={() => "Age Range"}
+            valueLabelDisplay="auto"
+            className="flex-grow"
+          />
       </div>
     </Box>
     </div>
@@ -205,7 +240,7 @@ export default function UsersTable() {
                   </Button>
                 </TableCell>
                <TableCell className="px-6 py-4 whitespace-nowrap">
-                <Button /*onClick={() => removeFlat(row.id)}*/>Delete</Button>
+               <Button onClick={() => removeUser(row._id)}>Delete</Button>
                 </TableCell> 
               </TableRow>
             ))}

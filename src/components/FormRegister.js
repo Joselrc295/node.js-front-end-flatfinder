@@ -90,6 +90,7 @@
 
     const handleSubmit = async (event) => {
       event.preventDefault();
+      console.log("submit")
       // Validar cada campo individualmente
       const firstNameValidation = validate(
         firstNameRef.current.value,
@@ -97,6 +98,9 @@
       );
       const lastNameValidation = validate(lastNameRef.current.value, "lastName");
       const emailValidation = validate(emailRef.current.value, "email");
+      console.log(firstNameValidation);
+      console.log(lastNameValidation);
+      console.log(emailValidation);
 
       // Verificar si alguna validación falló
       if (
@@ -130,6 +134,7 @@
           birthdayRef.current.value === "" ||
           roleRef.current.value === ""
         ) {
+          console.log("estoy aaa")
           showAlertMessage("error", "Please fill in all required fields.");
           setAllFieldsFilled(false);
           return;
@@ -182,15 +187,33 @@
 
     try {
       const api = new Api();
-      const result = await api.patch(`update-profile/${userId}`, userUpdate);
-
-      const message = result.data.message;
-      if (message === 'user updated') {
-        showAlertMessage("success", "Profile updated successfully.");
-        setTimeout(() => {
-          navigate("/profile", { replace: true });
-        }, 2000);
+      let result =null;
+      let message = null
+      if(userId){
+         result = await api.patch(`users/update-profile/${userId}`, userUpdate);
+         message = result.data.message;
+         if (message === 'user updated') {
+          showAlertMessage("success", "Profile updated successfully.");
+          setTimeout(() => {
+            navigate("/users", { replace: true });
+          }, 2000);
+        }
       }
+      else{
+         result = await api.patch(`users/update-profile/`, userUpdate);
+         console.log(result);
+         localStorage.setItem("user_data_logged", JSON.stringify(result.data.data));
+         message = result.data.message;
+         if (message === 'user updated') {
+          showAlertMessage("success", "Profile updated successfully.");
+          setTimeout(() => {
+            navigate("/profile", { replace: true });
+          }, 2000);
+        }
+
+      }
+      
+    
     } catch (error) {
       console.error("Error updating user:", error);
     }
@@ -219,7 +242,6 @@
       } else {
 
         try {
-          console.log("estoy aqui", userId)
           const api = new Api();
           
           if(userId == null){
@@ -229,8 +251,10 @@
           }
           else{
            const result = await api.get(`users/${userId}`);
+           console.log("estoy aqui", result)
+
            const dataUser = result.data.data;
-          const message = result.data.message;
+          const message = result.data.status;
           if (message === 'success') {
             setUser(dataUser);
             setUserLoaded(true);
@@ -391,7 +415,7 @@
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  {type === "create" && type === "view" && (
+                  {type === "create"  && (
                     <TextField
                     disabled={type === "view"}
                       defaultValue={user.password}
@@ -484,7 +508,7 @@
                     >
                       <MenuItem value={"landlord"}>Landlord</MenuItem>
                       <MenuItem value={"renter"}>Renter</MenuItem>
-                      {type === "update" && type==="view" && <MenuItem value={"admin"}>Admin</MenuItem>}
+                      {(type === "update" || type==="view") && <MenuItem value={"admin"}>Admin</MenuItem>}
                     </Select>
                   </FormControl>
                 </Grid>
