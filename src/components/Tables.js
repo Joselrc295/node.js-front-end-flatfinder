@@ -77,8 +77,8 @@ const TableFlats = ({ type ,  user, setUser}) => {
 
   const getData = async () => {
     setLoading(true);
-    const ref = collection(db, "flats");
-    let arrayWhere = [];
+    // const ref = collection(db, "flats");
+    // let arrayWhere = [];
 
     if (type === "my-flats") {
       let allFlats = []

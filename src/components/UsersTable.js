@@ -9,21 +9,21 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { useEffect, useState } from "react";
-import { getDocs, query, where, collection , doc , deleteDoc } from "firebase/firestore";
+import { collection } from "firebase/firestore";
 import { db } from "../Firebase";
 import Button from "@mui/material/Button";
 import Api from "../services/api";
 
 // @Params: type: "my-flats" | "all-flats" | "favorite-flats"
 export default function UsersTable() {
-  const ref = collection(db, "users");
-  const refFlats = collection(db, "flats");
+  // const ref = collection(db, "users");
+  // const refFlats = collection(db, "flats");
   const [userType, setUserType] = useState("");
   const [flatsCounter, setFlatsCounter] = useState("");
   const [valueSlider, setValueSlider] = React.useState([18, 120]);
   const [users, setUsers] = useState([]);
-  const [isAscending, setIsAscending] = useState(true);
-  const [flag , setFlag] = useState(false);
+  // const [isAscending, setIsAscending] = useState(true);
+  // const [flag , setFlag] = useState(false);
 
  
 
@@ -47,19 +47,22 @@ export default function UsersTable() {
    
     let filter =''
      if (userType) {
+      if (filter){
+        filter+='&'
+      }
       filter = `filter[role]=${userType}`
      }
      if (flatsCounter) {
       if (filter){
         filter+='&'
       }
-      filter = `filter[flatCountMin]=${flatsCounter.split('-')[0]}&filter[flatCountMax]=${flatsCounter.split('-')[1]}`
+      filter+= `filter[flatCountMin]=${flatsCounter.split('-')[0]}&filter[flatCountMax]=${flatsCounter.split('-')[1]}`
      }
      if(valueSlider){
       if (filter){
         filter+='&'
       }
-      filter = `filter[ageMin]=${valueSlider[0]}&filter[ageMax]=${valueSlider[1]}`
+      filter+= `filter[ageMin]=${valueSlider[0]}&filter[ageMax]=${valueSlider[1]}`
      }
     const api = new Api();
     const result = await api.get('users/?'+filter)
