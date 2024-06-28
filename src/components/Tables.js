@@ -25,6 +25,7 @@ import {
 } from "@firebase/firestore";
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
+import { element } from "prop-types";
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -92,7 +93,15 @@ const TableFlats = ({ type ,  user, setUser}) => {
       setFlats(allFlats);
     }
     if (type === "favorite-flats") {
-      const search = query(refFav, where("userId", "==", userId));
+      let allFlats = [] ;
+      const response = await api.get('favorites') ;
+      const dataFavorites =  response.data.data
+      dataFavorites.forEach((element)=>{
+          allFlats.push(element.flatID)
+      })
+     
+      
+      /*const search = query(refFav, where("userId", "==", userId));
       const data = await getDocs(search);
       const allFlats = [];
       for (const item of data.docs) {
@@ -103,13 +112,14 @@ const TableFlats = ({ type ,  user, setUser}) => {
           id: dataFlat.id,
           favorite: item.id,
         });
-      }
+      }*/
       setFlats(allFlats);
     }
     if (type === "all-flats") {
       let allFlats = [] ;
       const response = await api.get('flats');
       allFlats = response.data.data
+      console.log(response.data.data)
      /* if (city) {
         arrayWhere.push(where("city", "==", city));
       }
@@ -147,12 +157,11 @@ const TableFlats = ({ type ,  user, setUser}) => {
     setLoading(false);
   };
   const addFavorite = async (id) => {
-    console.log(userId, id);
+    console.log(id);
     const data = {
-      userId: userId,
-      flatId: id,
+      flatID: id,
     };
-    await addDoc(refFav, data);
+    await api.post('favorites', data);
     setFlag(!flag);
   };
   const removeFavorite = async (id) => {
@@ -216,6 +225,8 @@ const TableFlats = ({ type ,  user, setUser}) => {
   useEffect(() => {
     getData();
   }, [flag]);
+
+  console.log(flats)
 
   return (
     <>
@@ -389,7 +400,7 @@ const TableFlats = ({ type ,  user, setUser}) => {
           </TableHead>
           <TableBody >
             {flats.map((row) => (
-              <StyledTableRow key={row.id}>
+              <StyledTableRow key={row._id}>
                 <StyledTableCell component="th" scope="row">
                 {row.nameUser}
                 </StyledTableCell>
@@ -423,7 +434,7 @@ const TableFlats = ({ type ,  user, setUser}) => {
                     {!row.favorite && (
                       <Button
                         variant="outlined"
-                        onClick={() => addFavorite(row.id)}
+                        onClick={() => addFavorite(row._id)}
                       >
                         Add Favorite
                       </Button>
@@ -451,12 +462,12 @@ const TableFlats = ({ type ,  user, setUser}) => {
                   </StyledTableCell>
                 )}
                 <StyledTableCell align="center">
-                  <Button variant="contained" href={`/flat/${row.id}`}>
+                  <Button variant="contained" href={`/flat/${row._id}`}>
                     View
                   </Button>
                 </StyledTableCell>
                   {type === "my-flats" && ( <StyledTableCell>
-                    <Button href={`/flat/edit/${row.id}`}>Edit</Button></StyledTableCell>
+                    <Button href={`/flat/edit/${row._id}`}>Edit</Button></StyledTableCell>
                   )}
                 
                 {type === "my-flats" && 

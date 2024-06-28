@@ -10,6 +10,7 @@ import Api from "../services/api";
 
 export default function FlatForm({ type, id}) {
   const api = new Api()
+  console.log(id)
   const [flatLoaded, setFlatLoaded] = useState(false);
   const currentDate = new Date().toJSON().slice(0, 10);
   const flatsRef = collection(db, "flats");
@@ -153,13 +154,18 @@ export default function FlatForm({ type, id}) {
     }
   };
   const getFlatData = async () => {
-    const dataFlat = await getDoc(refFlat);
+  console.log(id)
+  let responseFlat = []
+  const result = await api.get(`flats/${id}`)
+  responseFlat = result.data.data
+  console.log(responseFlat)
+  /*  const dataFlat = await getDoc(refFlat);
   const responseFlat = { ...dataFlat.data() };
   const userId = responseFlat.user;
   const refUser = doc(db, "users", userId);
   const dataUser = await getDoc(refUser);
   //responseFlat.firstName = dataUser.data().firstName;
-  //responseFlat.lastName = dataUser.data().lastName;
+  //responseFlat.lastName = dataUser.data().lastName;*/
   setFlat(responseFlat);
   setFlatLoaded(true);
 };
@@ -268,7 +274,7 @@ export default function FlatForm({ type, id}) {
               defaultValue={flat.yearBuilt}
               disabled={type === "view"}
               label="Year built"
-              type="number"
+              type="string"
               // inputProps={{ min: 1900, max: 2050 }}
               inputRef={yearBuilt}
               variant="outlined"
