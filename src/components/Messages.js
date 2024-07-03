@@ -15,7 +15,7 @@ export default function Messages({ flatId }) {
   const [messageSent, setMessageSent] = useState(false);
   const [responseInput, setResponseInput] = useState("");
   const messageInput = useRef("");
-  const userId = JSON.parse(localStorage.getItem("user_data_logged"))._id;
+  const userId = JSON.parse(localStorage.getItem("user_data_logged")).id;
   const messagesContainerRef = useRef(null);
   const messagesEndRef = useRef(null);
 
@@ -42,7 +42,7 @@ export default function Messages({ flatId }) {
 
     const intervalId = setInterval(() => {
       getMessages();
-    }, 5000); // Actualiza cada 5 segundos
+    }, 500000000); // Actualiza cada 5 segundos
 
     return () => clearInterval(intervalId);
   }, [flatId]);
@@ -105,7 +105,7 @@ export default function Messages({ flatId }) {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen ">
+    <div className="flex  h-screen ">
       <div className="w-full max-w-4xl h-[80vh] p-4 bg-white rounded-lg  flex flex-col">
         <h1 className="text-center text-2xl font-bold mb-4 text-gray-800">Messenger</h1>
         <div 
@@ -120,6 +120,7 @@ export default function Messages({ flatId }) {
             if (item.userID) {
               isCurrentUser = item.userID._id === userId;
             }
+            console.log("aqui",item, isCurrentUser, userId);
             return (
               <div
                 key={item._id}
@@ -127,9 +128,9 @@ export default function Messages({ flatId }) {
               >
                 <div className={`max-w-[70%] ${isCurrentUser ? 'order-2' : 'order-1'}`}>
                   <div className={`
-                    rounded-lg p-3 
+                    rounded-lg p-2 
                     ${isCurrentUser 
-                      ? 'bg-[#dcf8c6] text-black rounded-tr-none' 
+                      ? 'bg-[#84e439] text-black rounded-tr-none' 
                       : 'bg-white text-black rounded-tl-none'
                     }
                     relative
@@ -138,7 +139,7 @@ export default function Messages({ flatId }) {
                     <div className={`
                       absolute w-4 h-4 
                       ${isCurrentUser 
-                        ? 'right-0 -mr-2 top-0 bg-[#dcf8c6]' 
+                        ? 'right-0 -mr-2 top-0 bg-[#8bef3e]' 
                         : 'left-0 -ml-2 top-0 bg-white'
                       }
                       transform rotate-45

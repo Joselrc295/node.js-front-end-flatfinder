@@ -5,7 +5,7 @@ export default class Api {
   token = "";
 
   constructor() {
-    this.urlBase = "http://172.16.15.130:3001/";  
+    this.urlBase = "http://localhost:3001/";  
   
     this.token = localStorage.getItem("user_logged");
     if (this.token) {
