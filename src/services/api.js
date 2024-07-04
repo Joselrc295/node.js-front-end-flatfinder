@@ -22,7 +22,7 @@ export default class Api {
     return axios.patch(this.urlBase + url, data);
   }
   delete = (url) => {
-    return axios.delete(this.urlBase + url);
+    return axios.delete(this.urlBase + url );
     };
 }
 

@@ -14,6 +14,14 @@ import {
 
 
 export default function FlatForm({ type, id}) {
+  const [alertSeverity, setAlertSeverity] = useState(null);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
+  const showAlertMessage = (severity, message) => {
+    setAlertSeverity(severity);
+    setAlertMessage(message);
+    setShowAlert(true);
+  };
   const api = new Api()
   console.log(id)
   const [flatLoaded, setFlatLoaded] = useState(false);
@@ -42,7 +50,7 @@ export default function FlatForm({ type, id}) {
   const rentPrice = useRef("");
   const dateAvailable = useRef("");
   let refFlat = null;
-  const [showAlert, setShowAlert] = useState(false);
+ 
   const user =(localStorage.getItem("user_logged"));
   
   if (id && type !== "create") {
@@ -114,7 +122,7 @@ export default function FlatForm({ type, id}) {
     };
     
     let flatForSubmit = {
-      city: city.current.value.trim(),
+      city: city.current.value,
       streetName: streetName.current.value,
       streetNumber: streetNumber.current.value,
       areaSize: parseInt(areaSize.current.value),
@@ -142,12 +150,18 @@ export default function FlatForm({ type, id}) {
       rentPrice.current.value &&
       dateAvailable.current.value 
     ) {
-    
       if(type === 'update'){
         
-        await updateDoc(refFlat , flatForSubmit )
-
-      }else{ 
+        const  result = await api.patch(`flats/${id}`,  flatForSubmit)
+         /*  if (message ==='Success') {
+            showAlertMessage("success", "Flat updated successfully.");
+            setTimeout(() => {
+              navigate("/my-flats", { replace: true });
+            }, 2000);
+          }*/
+      
+      }
+      if(type === 'create'){ 
         
       const result =   await api.post("flats" ,flatForSubmit);}
       setShowAlert(true);
@@ -180,6 +194,7 @@ export default function FlatForm({ type, id}) {
     } else {
       setFlatLoaded(true);
     }
+    
   };
 
   useEffect(() => {
