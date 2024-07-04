@@ -6,6 +6,11 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Alert from '@mui/material/Alert'
 import Api from "../services/api";
+import {  
+  Grid, 
+  FormControlLabel, 
+  CircularProgress,  
+} from '@mui/material';
 
 
 export default function FlatForm({ type, id}) {
@@ -182,145 +187,155 @@ export default function FlatForm({ type, id}) {
   }, []);
 
   return (
-    <>
     <Box
       onSubmit={handleSubmit}
+      component="form"
       sx={{
-        marginLeft: "5%",
-        marginRight: "5%",
-        marginTop: "2.5%",
-        textAlign: "center",
+        maxWidth: '800px',
+        margin: '2.5% auto',
+        padding: '24px',
+        backgroundColor: '#ffffff',
+        borderRadius: '12px',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
       }}
-      component={"form"}
-      className="mx-auto mt-10 sm:w-2/5 bg-gray-100 p-6 rounded-lg shadow-lg"
     >
       {flatLoaded ? (
         <>
-        {type === "create" && (
-          <Typography
-            fontWeight={"bold"}
-            component={"h2"}
-            className="text-black text-2xl md:text-3xl lg:text-4xl"
-          > 
-            Create Your Flat
-          </Typography>
-        )}
-        {/*type === "view"&&(
-          <Typography variant="h6">Flat Owner: {flat.firstName} {flat.lastName} </Typography>
-        )*/}
-          <br />
-          {showAlert && <Alert severity="success">You have created a new flat.</Alert>}
-          <div className="flex flex-col md:flex-row lg:flex-row">
-            <TextField
-              disabled={type === "view"}
-              label="City"
-              value={flat.city}
-              inputRef={city}
-              variant="outlined"
-              className="mb-2 md:mr-2 lg:mr-4 md:mb-0 lg:mb-0 flex-grow"
-              onChange={(e) =>{
-                const inputValue = e.target.value
-                const capitalized = capitalizeFirstLetter(inputValue);
-                setFlat({ ...flat, city: capitalized })
+          {type === "create" && (
+            <Typography
+              variant="h4"
+              component="h2"
+              sx={{
+                fontWeight: 'bold',
+                color: '#333',
+                marginBottom: '24px',
+                textAlign: 'center',
               }}
-              required
-            />
-            <TextField
-              disabled={type === "view"}
-              label="Street name"
-              defaultValue={flat.streetName}
-              inputRef={streetName}
-              variant="outlined"
-              className="mb-2 md:ml-2 lg:ml-4 md:mb-0 lg:mb-0 flex-grow"
-              required
-            />
-          </div>
-          <br />
-          <div className="flex flex-col md:flex-row lg:flex-row">
-            <TextField
-              disabled={type === "view"}
-              label="Street number"
-              defaultValue={flat.streetNumber}
-              inputRef={streetNumber}
-              variant="outlined"
-              className="mb-2 md:mr-2 lg:mr-4 md:mb-0 lg:mb-0 flex-grow"
-              required
-            />
-            <TextField
-              disabled={type === "view"}
-              label="Area size"
-              type="number"
-              defaultValue={flat.areaSize}
-              inputRef={areaSize}
-              variant="outlined"
-              className="mb-2 md:ml-2 lg:ml-4 md:mb-0 lg:mb-0 flex-grow"
-              required
-            />
-          </div>
-          <br />
-          <div className="flex flex-col md:flex-row lg:flex-row">
-            <div className="flex items-center mb-2 md:mr-2 lg:mr-4 md:mb-0 lg:mb-0">
-              <Switch
+            >
+              Create Your Flat
+            </Typography>
+          )}
+          {showAlert && (
+            <Alert severity="success" sx={{ marginBottom: '24px' }}>
+              You have created a new flat.
+            </Alert>
+          )}
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={6}>
+              <TextField
                 disabled={type === "view"}
-                defaultValue={flat.hasAc}
-                inputRef={hasAC}
-              
+                label="City"
+                value={flat.city}
+                inputRef={city}
+                variant="outlined"
+                fullWidth
+                onChange={(e) => {
+                  const inputValue = e.target.value;
+                  const capitalized = capitalizeFirstLetter(inputValue);
+                  setFlat({ ...flat, city: capitalized });
+                }}
+                required
               />
-              <label htmlFor="switch" className="ml-2">
-                Has AC
-              </label>
-            </div>
-            <TextField
-              defaultValue={flat.yearBuilt}
-              disabled={type === "view"}
-              label="Year built"
-              type="string"
-              // inputProps={{ min: 1900, max: 2050 }}
-              inputRef={yearBuilt}
-              variant="outlined"
-              className="mb-2 md:ml-2 lg:ml-4 md:mb-0 lg:mb-0 flex-grow"
-              required
-            />
-          </div>
-          <br />
-          <div className="flex flex-col md:flex-row lg:flex-row">
-            <TextField
-              defaultValue={flat.rentPrice}
-              disabled={type === "view"}
-              label="Rent price"
-              type="number"
-              inputRef={rentPrice}
-              variant="outlined"
-              className="mb-2 md:mr-2 lg:mr-4 md:mb-0 lg:mb-0 flex-grow"
-              required
-            />
-            <TextField
-              disabled={type === "view"}
-              defaultValue={flat.dateAvailable}
-              type="date"
-              label="Date available"
-              defaultValue={date}
-              inputRef={dateAvailable}
-              variant="outlined"
-              className="mb-2 md:ml-2 lg:ml-4 md:mb-0 lg:mb-0 flex-grow"
-              required
-            />
-          </div>
-          <br />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                disabled={type === "view"}
+                label="Street name"
+                defaultValue={flat.streetName}
+                inputRef={streetName}
+                variant="outlined"
+                fullWidth
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                disabled={type === "view"}
+                label="Street number"
+                defaultValue={flat.streetNumber}
+                inputRef={streetNumber}
+                variant="outlined"
+                fullWidth
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                disabled={type === "view"}
+                label="Area size"
+                type="number"
+                defaultValue={flat.areaSize}
+                inputRef={areaSize}
+                variant="outlined"
+                fullWidth
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    disabled={type === "view"}
+                    defaultChecked={flat.hasAc}
+                    inputRef={hasAC}
+                  />
+                }
+                label="Has AC"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                defaultValue={flat.yearBuilt}
+                disabled={type === "view"}
+                label="Year built"
+                type="string"
+                inputRef={yearBuilt}
+                variant="outlined"
+                fullWidth
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                defaultValue={flat.rentPrice}
+                disabled={type === "view"}
+                label="Rent price"
+                type="number"
+                inputRef={rentPrice}
+                variant="outlined"
+                fullWidth
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                disabled={type === "view"}
+                defaultValue={flat.dateAvailable}
+                type="date"
+                label="Date available"
+                inputRef={dateAvailable}
+                variant="outlined"
+                fullWidth
+                required
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+          </Grid>
           {type !== "view" && (
             <Button
               type="submit"
-              className="w-full bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+              variant="contained"
+              color="primary"
+              fullWidth
+              sx={{ marginTop: '24px' }}
             >
               Submit
             </Button>
           )}
-          {/*TODO: Add the update button*/}
         </>
       ) : (
-        <p>Loading...</p>
+        <CircularProgress sx={{ display: 'block', margin: '20px auto' }} />
       )}
     </Box>
-    </>
   );
 }

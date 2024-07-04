@@ -1,171 +1,201 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  where,
-  Timestamp,
-} from "firebase/firestore";
+import { addDoc, collection, doc, getDoc } from "firebase/firestore";
 import { db } from "../Firebase";
 import { Box, Button, TextField } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
+import Api from "../services/api";
 
 export default function Messages({ flatId }) {
   const ref = doc(db, "flats", flatId);
   const refMessages = collection(db, "messages");
+  const api = new Api();
 
   const [flat, setFlat] = useState({});
-  const [type, setType] = useState("create");
   const [messages, setMessages] = useState([]);
   const [messageSent, setMessageSent] = useState(false);
   const [responseInput, setResponseInput] = useState("");
   const messageInput = useRef("");
+  const userId = JSON.parse(localStorage.getItem("user_data_logged")).id;
+  const messagesContainerRef = useRef(null);
+  const messagesEndRef = useRef(null);
 
   const getMessages = async () => {
-    const search = query(refMessages, where("flatId", "==", flatId));
-    const dataMessages = await getDocs(search);
-    const rows = dataMessages.docs.map((item) => {
-      const message = { ...item.data(), id: item.id };
-      message.timestamp = message.timestamp.toDate();
-      return message;
-    });
-    const newMessages = [];
-    for (const item of rows) {
-      const refUser = doc(db, "users", item.userId);
-      const dataUser = await getDoc(refUser);
-      const userMessage = { ...dataUser.data() };
-      newMessages.push({ ...item, user: userMessage });
+    try {
+      const response = await api.get(`messages?flatId=${flatId}`);
+      setMessages(response.data.data);
+    } catch (error) {
+      console.error('Error fetching messages:', error);
     }
-
-    setMessages(newMessages);
   };
 
   const getFlat = async () => {
-    const userId = (localStorage.getItem("user_logged"));
     const dataFlat = await getDoc(ref);
     const responseFlat = { ...dataFlat.data() };
-    if (responseFlat.user === userId) {
-      setType("view");
-      await getMessages();
-    } else {
-      setType("create");
-    }
     setFlat(responseFlat);
+    await getMessages();
   };
 
   useEffect(() => {
-    getFlat();
-  }, []);
+    if (flatId) {
+      getFlat();
+    }
+
+    const intervalId = setInterval(() => {
+      getMessages();
+    }, 5000); // Actualiza cada 5 segundos
+
+    return () => clearInterval(intervalId);
+  }, [flatId]);
+
+  useEffect(() => {
+    if (messagesContainerRef.current && messagesEndRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const message = messageInput.current.value;
-    const data = {
-      message: message,
-      flatId: flatId,
-      userId: (localStorage.getItem("user_logged")),
-      timestamp: Timestamp.fromDate(new Date()),
-    };
-    await addDoc(refMessages, data);
 
-    messageInput.current.value = "";
-    setMessageSent(true);
-    setTimeout(() => {
-      setMessageSent(false);
-    }, 3000);
+    try {
+      const response = await api.post('messages', {
+        message: message,
+        flatId: flatId
+      });
+
+      if (response.data.status === 'success') {
+        messageInput.current.value = "";
+        setMessageSent(true);
+        setTimeout(() => {
+          setMessageSent(false);
+        }, 3000);
+        await getMessages();
+      } else {
+        console.error('Error sending message:', response.data.message);
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
   };
 
   const handleResponseSubmit = async () => {
     const responseMessage = responseInput.trim();
-    if (responseMessage !== "") {
-      const data = {
-        message: responseMessage,
-        flatId: flatId,
-        userId: (localStorage.getItem("user_logged")),
-        timestamp: Timestamp.fromDate(new Date()),
-      };
-      await addDoc(refMessages, data);
-      setResponseInput("");
-      await getMessages();
+    if (responseMessage) {
+      try {
+        await api.post('messages', {
+          message: responseMessage,
+          flatId: flatId,
+          userId: userId,
+          timestamp: new Date(),
+          isResponse: true
+        });
+        setResponseInput("");
+        await getMessages();
+      } catch (error) {
+        console.error('Error sending response message:', error);
+      }
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSubmit(e);
     }
   };
 
   return (
-    <div>
-      <h1>Messenger</h1>
-      {type === "create" && (
-        <>
-          <Box
-            component={"form"}
-            onSubmit={handleSubmit}
-            className="flex flex-col items-center justify-center p-4 rounded-lg bg-gray-100 shadow-md"
-          >
-            {messageSent && <p className="mb-2 text-green-500">Message sent</p>}
-            <TextField
-              type={"text"}
-              label={"Message"}
-              inputRef={messageInput}
-              multiline
-              maxRows={3}
-              minRows={3}
-              className="mb-4 w-1/2"
-              variant="outlined"
-              InputProps={{
-                className: "bg-white rounded-md",
-              }}
-            />
-            <Button
-              type={"submit"}
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              variant="contained" endIcon={<SendIcon />}
-            >
-              Send
-            </Button>
-          </Box>
-        </>
-      )}
-      {type === "view" && (
-        <>
+    <div className="flex justify-center items-center h-screen ">
+      <div className="w-full max-w-4xl h-[80vh] p-4 bg-white rounded-lg  flex flex-col">
+        <h1 className="text-center text-2xl font-bold mb-4 text-gray-800">Messenger</h1>
+        <div 
+          className="flex-grow overflow-auto p-4 bg-[#e5ddd5] rounded-lg mb-4"
+          ref={messagesContainerRef}
+          style={{scrollbarWidth: 'thin', scrollbarColor: '#CBD5E0 #EDF2F7'}}
+        >
           {messages.map((item) => {
-            const messageTime = new Date(item.timestamp).toLocaleTimeString();
-            const messageDate = new Date(item.timestamp).toLocaleDateString();
+            const messageTime = new Date(item.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const messageDate = new Date(item.createdAt).toLocaleDateString();
+            let isCurrentUser = false;
+            if (item.userID) {
+              isCurrentUser = item.userID._id === userId;
+            }
+            console.log("aqui",item, isCurrentUser, userId);
             return (
               <div
-                key={item.id}
-                className={`max-w-xs mx-auto my-4 p-4 rounded-lg shadow ${item.userId === (localStorage.getItem("user_logged")) ? "bg-emerald-300" : "bg-blue-100"}`}
+                key={item._id}
+                className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'} mb-4`}
               >
-                <div className="flex justify-between items-center mb-2">
-                  <p className="text-sm font-semibold">{item.user.firstName}</p>
-                  <p className="text-xs text-gray-500">
-                    {messageDate} {messageTime}
-                  </p>
+                <div className={`max-w-[70%] ${isCurrentUser ? 'order-2' : 'order-1'}`}>
+                  <div className={`
+                    rounded-lg p-3 
+                    ${isCurrentUser 
+                      ? 'bg-[#DCF8C6] text-black rounded-tr-none shadow-md' 
+                      : 'bg-white text-black rounded-tl-none shadow-md'
+                    }
+                    relative
+                  `}>
+                    <p className="text-sm whitespace-pre-wrap">{item.message}</p>
+                    <div className={`
+                      absolute w-4 h-4 
+                      ${isCurrentUser 
+                        ? 'right-0 -mr-2 top-0 bg-[#DCF8C6] shadow-md' 
+                        : 'left-0 -ml-2 top-0 bg-white shadow-md'
+                      }
+                      transform rotate-45
+                    `}></div>
+                  </div>
+                  <div className={`text-xs mt-1 ${isCurrentUser ? 'text-right' : 'text-left'}`}>
+                    <span className="font-semibold mr-2">{item.userID ? item.userID.firstName : 'Unknown'}</span>
+                    <span className="text-gray-500">{messageTime}</span>
+                  </div>
                 </div>
-                <p className="text-base">{item.message}</p>
               </div>
             );
           })}
-          <div className="flex justify-center items-center mt-4">
-            <TextField
-              type={"text"}
-              label={"Response"}
-              value={responseInput}
-              onChange={(e) => setResponseInput(e.target.value)}
-              variant="outlined"
-              className="mr-2"
-            />
+          <div ref={messagesEndRef} />
+        </div>
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          className="flex items-end space-x-2 bg-gray-100 p-3 rounded-lg"
+        >
+          <TextField
+            type="text"
+            placeholder="Type a message..."
+            inputRef={messageInput}
+            multiline
+            maxRows={4}
+            className="flex-grow"
+            variant="outlined"
+            size="small"
+            InputProps={{ 
+              className: "bg-white rounded-md",
+              style: { fontSize: '0.9rem' }
+            }}
+            onKeyDown={handleKeyDown}
+          />
+          {flat.user !== userId ? (
             <Button
-              onClick={handleResponseSubmit}
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              type="submit"
+              className="bg-[#128C7E] hover:bg-[#075E54] text-white font-bold py-2 px-4 rounded-full transition duration-200 ease-in-out"
+              variant="contained"
+              endIcon={<SendIcon />}
             >
               Send
             </Button>
-          </div>
-        </>
-      )}
+          ) : (
+            <Button
+              onClick={handleResponseSubmit}
+              className="bg-[#128C7E] hover:bg-[#075E54] text-white font-bold py-2 px-4 rounded-full transition duration-200 ease-in-out"
+              variant="contained"
+              endIcon={<SendIcon />}
+            >
+              Reply
+            </Button>
+          )}
+        </Box>
+      </div>
     </div>
   );
 }

@@ -18,6 +18,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import { doc, updateDoc, addDoc, getDoc, collection } from "firebase/firestore";
 import { db } from "../Firebase";
 import Api from "../services/api";
+import { isValidDateValue } from "@testing-library/user-event/dist/utils";
 
 export default function FormRegister({ type, onSuccessRedirect, userId }) {
   console.log(type, userId);
@@ -32,6 +33,7 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
   const [allFieldsFilled, setAllFieldsFilled] = useState(true); // Estado para controlar si todos los campos están llenos
   // const userLogged = (localStorage.getItem("user_logged"));
   const userLoggedData = JSON.parse(localStorage.getItem("user_data_logged"));
+  const [birthdayError, setBirthdayError] = useState("");
   let updatedLogged = false;
 
   const showAlertMessage = (severity, message) => {
@@ -95,6 +97,7 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
     );
     const lastNameValidation = validate(lastNameRef.current.value, "lastName");
     const emailValidation = validate(emailRef.current.value, "email");
+    const birthdayValidation = validate(birthdayRef.current.value, "birthday");
     console.log(firstNameValidation);
     console.log(lastNameValidation);
     console.log(emailValidation);
@@ -103,7 +106,8 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
     if (
       firstNameValidation !== "" ||
       lastNameValidation !== "" ||
-      emailValidation !== ""
+      emailValidation !== ""||
+      birthdayValidation !== ""
     ) {
       // Mostrar la alerta si algún campo no pasa la validación
       showAlertMessage("error", "Please fill in all fields correctly.");
@@ -320,6 +324,12 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
   const handleConfirmPasswordChange = (event) => {
     setConfirmPassword(event.target.value);
   };
+  const handleBirthdayChange = (event) => {
+    setUser((prevState) => ({
+     ...prevState,
+      birthday: event.target.value,
+    }));
+  }
 
   const validate = (value, type) => {
     if (type === "firstName") {
@@ -334,6 +344,14 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
       }
     }
 
+    if (type === "birthday") {
+      if (!value) {
+        setBirthdayError("Birthday must not be empty.");
+        return "Birthday must not be empty.";
+      } else {
+        setBirthdayError("");
+      }
+    }
     if (type === "email") {
       if (!/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(value)) {
         return "Email must be a valid email address.";
@@ -504,7 +522,10 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
                   label={type === "update" || "create" ? null : "Birthday"}
                   type={type === "view" ? "text" : "date"}
                   id="birthday"
+                  onChange={handleBirthdayChange}
                   autoComplete="birthday"
+                  error={birthdayError!== ""}
+                  helperText={birthdayError}
                   inputRef={birthdayRef}
                 />
               </Grid>
@@ -525,7 +546,7 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
                   >
                     <MenuItem value={"landlord"}>Landlord</MenuItem>
                     <MenuItem value={"renter"}>Renter</MenuItem>
-                    {(type === "update" || type === "view") && (
+                    {( user.role === "admin") && (
                       <MenuItem value={"admin"}>Admin</MenuItem>
                     )}
                   </Select>
