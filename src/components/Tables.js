@@ -64,6 +64,7 @@ const TableFlats = ({ type ,  user, setUser}) => {
   const [flag, setFlag] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isAscending, setIsAscending] = useState(true);
+  const [favorite , setFavorite] = useState([])
   
   
   const capitalizeFirstLetter = (word) =>{
@@ -117,7 +118,27 @@ const TableFlats = ({ type ,  user, setUser}) => {
     }
     if (type === "all-flats") {
       let allFlats = [] ;
-      const response = await api.get('flats');
+      let filter = `filter[status]=${true}`
+      if(city){
+      if(filter){
+        filter += '&'
+      }
+      filter = `filter[city]=${city}`
+    }
+    if(rentPrice){
+      if(filter){
+        filter +='&'
+      }
+      filter+= `filter[rentPriceMin]=${rentPrice.split('-')[0]}&filter[rentPriceMax]=${rentPrice.split('-')[1]}`
+      console.log(filter)
+    }
+    if(areaSize){
+      if(filter){
+        filter += '&'
+      }
+      filter+= `filter[areaSizeMin]=${areaSize.split('-')[0]}&filter[areaSizeMax]=${areaSize.split('-')[1]}`
+    }
+      const response = await api.get('flats/?' + filter);
       allFlats = response.data.data
       console.log(response.data.data)
      /* if (city) {
@@ -151,6 +172,13 @@ const TableFlats = ({ type ,  user, setUser}) => {
         const flatWhitFav = { ...item.data(), id: item.id, favorite: favorite };
         allFlats.push(flatWhitFav);
       }*/
+        const responseFavorites = await api.get('favorites/home') ;
+        const dataFavorites =  responseFavorites.data.data;
+        setFavorite(dataFavorites)
+        
+        
+        console.log(dataFavorites)
+
       
       setFlats(allFlats);
     }
@@ -165,14 +193,13 @@ const TableFlats = ({ type ,  user, setUser}) => {
     setFlag(!flag);
   };
   const removeFavorite = async (id) => {
-    const refRemoveFav = doc(db, "favorites", id);
-    await deleteDoc(refRemoveFav);
+    console.log(id)
+    await api.delete(`favorites/${id}`)
+    
     setFlag(!flag);
   };
   const removeFlat = async (id) =>{
-    const refRemove = doc(db , 'flats' , id) ;
-    await deleteDoc(refRemove) ;
-    setFlag(!flag)
+    await api.delete(`flats/${id}`)
   }
   const handleSort = () =>{
     const sortedData = [...flats]
@@ -399,13 +426,21 @@ const TableFlats = ({ type ,  user, setUser}) => {
             </TableRow>
           </TableHead>
           <TableBody >
-            {flats.map((row) => (
-              <StyledTableRow key={row._id}>
+            {flats.map((row, index) => {
+
+              const fav = favorite.filter(item => item.flatID == row._id )
+              if(fav.length){
+                row.favorite = true
+              }else{
+                row.favorite = false
+              }
+              return (
+              <StyledTableRow key={index}>
                 <StyledTableCell component="th" scope="row">
-                {row.nameUser}
+                {row.flatCreator}
                 </StyledTableCell>
                 <StyledTableCell component="th" scope="row">
-                {row.emailUser}
+                {row.flatCreatorEmail}
                 </StyledTableCell>
                 <StyledTableCell component="th" scope="row">
                   {row.city}
@@ -442,7 +477,7 @@ const TableFlats = ({ type ,  user, setUser}) => {
                     {row.favorite && (
                       <Button
                         variant="outlined"
-                        onClick={() => removeFavorite(row.favorite)}
+                        onClick={() => removeFavorite(row._id)}
                       >
                         Remove Favorite
                       </Button>
@@ -454,7 +489,7 @@ const TableFlats = ({ type ,  user, setUser}) => {
                     {
                       <Button
                         variant="outlined"
-                        onClick={() => removeFavorite(row.favorite)}
+                        onClick={() => removeFavorite(row._id)}
                       >
                         Remove Favorite
                       </Button>
@@ -471,11 +506,12 @@ const TableFlats = ({ type ,  user, setUser}) => {
                   )}
                 
                 {type === "my-flats" && 
-                <StyledTableCell align="center"><Button onClick={() => removeFlat(row.id)}>Delete</Button></StyledTableCell>
+                <StyledTableCell align="center"><Button onClick={() => removeFlat(row._id)}>Delete</Button></StyledTableCell>
                 }
-                 {type === 'all-flats' && user.role === 'admin' &&  <StyledTableCell align="center"><Button onClick={() => removeFlat(row.id)}>Delete</Button></StyledTableCell>}
+                 {type === 'all-flats' && user.role === 'admin' &&  <StyledTableCell align="center"><Button onClick={() => removeFlat(row._id)}>Delete</Button></StyledTableCell>}
               </StyledTableRow>
-            ))}
+            )}
+            )}
           </TableBody>
         </Table>
       </TableContainer>
