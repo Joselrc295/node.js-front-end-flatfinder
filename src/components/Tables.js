@@ -84,7 +84,9 @@ const TableFlats = ({ type ,  user, setUser}) => {
 
     if (type === "my-flats") {
       let allFlats = []
-      const response = await api.get('flats/my')
+      let filter = `filter[status]=${true}`
+      const response = await api.get('flats/my/?' + filter)
+      console.log(response)
       allFlats = response.data.data
      /* const search = query(ref, where("user", "==", userId));
       const data = await getDocs(search);
@@ -198,9 +200,15 @@ const TableFlats = ({ type ,  user, setUser}) => {
     
     setFlag(!flag);
   };
+  const removeFlatAdmin = async (id) =>{
+    await api.delete(`flats/admin/${id}`)
+    setFlag(!flag);
+  }
   const removeFlat = async (id) =>{
     await api.delete(`flats/${id}`)
+    setFlag(!flag);
   }
+  
   const handleSort = () =>{
     const sortedData = [...flats]
     sortedData.sort((a , b) =>{
@@ -508,7 +516,7 @@ const TableFlats = ({ type ,  user, setUser}) => {
                 {type === "my-flats" && 
                 <StyledTableCell align="center"><Button onClick={() => removeFlat(row._id)}>Delete</Button></StyledTableCell>
                 }
-                 {type === 'all-flats' && user.role === 'admin' &&  <StyledTableCell align="center"><Button onClick={() => removeFlat(row._id)}>Delete</Button></StyledTableCell>}
+                 {type === 'all-flats' && user.role === 'admin' &&  <StyledTableCell align="center"><Button onClick={() => removeFlatAdmin(row._id)}>Delete</Button></StyledTableCell>}
               </StyledTableRow>
             )}
             )}
