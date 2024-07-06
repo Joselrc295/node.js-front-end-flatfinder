@@ -1,5 +1,4 @@
-import {doc, getDoc} from "firebase/firestore";
-import {db} from "../../src/Firebase";
+
 
 export async function getUserLogged() {
     // const userId = getUserId();

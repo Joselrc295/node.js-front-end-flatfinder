@@ -14,14 +14,7 @@ import { useEffect } from "react";
 import { db } from "../Firebase";
 import Api from "../services/api";
 import {
-  collection,
-  getDocs,
-  query,
-  where,
-  addDoc,
-  doc,
-  getDoc,
-  deleteDoc,
+  collection
 } from "@firebase/firestore";
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';

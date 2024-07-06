@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { addDoc, collection, doc, getDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { db } from "../Firebase";
 import { Box, Button, TextField } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
@@ -7,7 +7,7 @@ import Api from "../services/api";
 
 export default function Messages({ flatId }) {
   const ref = doc(db, "flats", flatId);
-  const refMessages = collection(db, "messages");
+  // const refMessages = collection(db, "messages");
   const api = new Api();
 
   const [flat, setFlat] = useState({});

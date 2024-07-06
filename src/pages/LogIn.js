@@ -3,8 +3,6 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
@@ -14,13 +12,12 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useRef } from "react";
 import { db } from "../Firebase";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
 import Api from "../services/api";
-import { LocalSeeSharp } from "@mui/icons-material";
 import flatsImage from "../Imagenes/flats2.jpeg";
 
 function Copyright(props) {
@@ -100,39 +97,6 @@ export default function LogIn() {
     }
   };
 
-  // const login = async (e) => {
-  //   e.preventDefault();
-  //   setIsProgress(true);
-  //   const search = query(
-  //     usersRef,
-  //     where("email", "==", emailRef.current.value)
-  //   );
-  //   const result = await getDocs(search);
-  //   if (result.docs.length > 0) {
-  //     const user = result.docs[0].data();
-  //     const user_id = result.docs[0].id
-  //     setIsProgress(false);
-  //     if (user.password === passwordRef.current.value) {
-  //       console.log("login successful");
-  //       showAlertMessage("success", "Login successful");
-  //       localStorage.setItem("user_logged", JSON.stringify( user_id));
-  //       setTimeout(() => {
-  //         navigate("/dashboard", {replace: true});
-  //       }, 2000); // Redirigir al dashboard después de 2 segundos
-  //       setIsProgress(false);
-  //     } else {
-  //       console.log("login failed");
-  //       showAlertMessage("error", "Incorrect email or password");
-  //       setIsProgress(false);
-  //     }
-  //   } else {
-  //     console.log(" email failed");
-  //     showAlertMessage("error", "Incorrect email or password");
-  //     setIsProgress(false);
-  //   }
-  //   setIsProgress(false);
-  // };
-
   return (
     <div
       style={{
@@ -206,6 +170,13 @@ export default function LogIn() {
                 autoComplete="current-password"
                 inputRef={passwordRef}
               />
+              <Grid container>
+                <Grid item>
+                  <Link className="text-[#fbfdff]" href="/forgot-password" variant="body2">
+                    {"Forgot your password?"}
+                  </Link>
+                </Grid>
+              </Grid>
               <Button
                 type="submit"
                 fullWidth
@@ -217,7 +188,7 @@ export default function LogIn() {
               </Button>
               <Grid container>
                 <Grid item>
-                  <Link className="text-[#afceec]" href="/sign-up" variant="body2">
+                  <Link className="text-[#fbfdff]" href="/sign-up" variant="body2">
                     {"Don't have an account? Sign Up"}
                   </Link>
                 </Grid>
