@@ -11,7 +11,8 @@ import { MyFlats } from './pages/MyFlats';
 import { FavoriteFlats } from './pages/FavoriteFlats';
 import Flat  from "./pages/Flat";
 import FlatEdit from './pages/FlatEdit';
-
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 
 function App() {
@@ -31,6 +32,8 @@ function App() {
       <Route path = {'/favorite-flats'} element = {<FavoriteFlats/>}/>
       <Route path={"/flat/:id"} element={<Flat/>} />
       <Route path={"/flat/edit/:id"} element={<FlatEdit/>} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       
     </Routes> 
   

@@ -9,8 +9,6 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { useEffect, useState } from "react";
-import { collection } from "firebase/firestore";
-import { db } from "../Firebase";
 import Button from "@mui/material/Button";
 import Api from "../services/api";
 
