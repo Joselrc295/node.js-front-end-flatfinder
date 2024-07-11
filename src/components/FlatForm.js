@@ -1,7 +1,5 @@
 import Box from "@mui/material/Box";
 import { Button, Switch, TextField, Typography } from "@mui/material";
-import { collection, doc, getDoc } from "firebase/firestore";
-import { db } from "../Firebase";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Alert from "@mui/material/Alert";
@@ -21,7 +19,6 @@ export default function FlatForm({ type, id }) {
   console.log(id);
   const [flatLoaded, setFlatLoaded] = useState(false);
   const currentDate = new Date().toJSON().slice(0, 10);
-  const flatsRef = collection(db, "flats");
   const [flat, setFlat] = useState({
     city: "",
     streetName: "",
@@ -44,16 +41,11 @@ export default function FlatForm({ type, id }) {
   const rentPrice = useRef("");
   const dateAvailable = useRef("");
   let refFlat = null;
+  const user =(localStorage.getItem("user_logged"));
+  const capitalizeFirstLetter = (word) =>{
+    if (!word){
+      return ''
 
-  const user = localStorage.getItem("user_logged");
-
-  if (id && type !== "create") {
-    refFlat = doc(db, "flats", id);
-  }
-
-  const capitalizeFirstLetter = (word) => {
-    if (!word) {
-      return "";
     }
     const firstLetter = word.charAt(0).toUpperCase();
     const restOfWord = word.slice(1).toLowerCase();
@@ -62,9 +54,6 @@ export default function FlatForm({ type, id }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const refUser = doc(db, "users", user);
-    const dataUser = await getDoc(refUser);
 
     const onlyLetters = () => {
       if (
@@ -109,7 +98,7 @@ export default function FlatForm({ type, id }) {
     };
 
     let flatForSubmit = {
-      city: city.current.value,
+      city: city.current.value.trim(),
       streetName: streetName.current.value,
       streetNumber: streetNumber.current.value,
       areaSize: parseInt(areaSize.current.value),
@@ -117,18 +106,11 @@ export default function FlatForm({ type, id }) {
       yearBuilt: yearBuilt.current.value,
       rentPrice: parseInt(rentPrice.current.value),
       dateAvailable: dateAvailable.current.value,
-      user: localStorage.getItem("user_logged"),
-      //nameUser: dataUser.data().firstName,
-      //emailUser: dataUser.data().email
-    };
 
-    console.log(
-      onlyLetters(),
-      forCity(),
-      forStreet(),
-      onlyNumbers(),
-      yearBuilt.current.value
-    );
+      user:(localStorage.getItem("user_logged")),
+    }   
+    console.log(onlyLetters(),forCity() ,forStreet(), onlyNumbers(),  yearBuilt.current.value);
+
     if (
       onlyLetters() &&
       forCity() &&
@@ -151,6 +133,7 @@ export default function FlatForm({ type, id }) {
               navigate("/my-flats", { replace: true });
             }, 2000);
           }*/
+
       }
       if (type === "create") {
         const result = await api.post("flats", flatForSubmit);
@@ -164,21 +147,14 @@ export default function FlatForm({ type, id }) {
     }
   };
   const getFlatData = async () => {
-    console.log(id);
-    let responseFlat = [];
-    const result = await api.get(`flats/${id}`);
-    responseFlat = result.data.data;
-    console.log(responseFlat);
-    /*  const dataFlat = await getDoc(refFlat);
-  const responseFlat = { ...dataFlat.data() };
-  const userId = responseFlat.user;
-  const refUser = doc(db, "users", userId);
-  const dataUser = await getDoc(refUser);
-  //responseFlat.firstName = dataUser.data().firstName;
-  //responseFlat.lastName = dataUser.data().lastName;*/
-    setFlat(responseFlat);
-    setFlatLoaded(true);
-  };
+
+  let responseFlat = []
+  const result = await api.get(`flats/${id}`)
+  responseFlat = result.data.data
+  setFlat(responseFlat);
+  setFlatLoaded(true);
+};
+
   const processData = async () => {
     if (type === "update" || type === "view") {
       await getFlatData();
