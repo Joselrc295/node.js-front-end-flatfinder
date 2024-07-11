@@ -18,7 +18,7 @@ import {
 } from "@firebase/firestore";
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
-import { element } from "prop-types";
+// import { element } from "prop-types";
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -48,8 +48,8 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 const TableFlats = ({ type ,  user, setUser}) => {
   const api = new Api()
-  const refFav = collection(db, "favorites");
-  const userId =(localStorage.getItem("user_logged"));
+  // const refFav = collection(db, "favorites");
+  // const userId =(localStorage.getItem("user_logged"));
   const [flats, setFlats] = useState([]);
   const [city, setCity] = useState("");
   const [rentPrice, setRentPrice] = useState(0);
@@ -443,7 +443,7 @@ const TableFlats = ({ type ,  user, setUser}) => {
                 <StyledTableCell component="th" scope="row">
                 {row.flatCreatorEmail}
                 </StyledTableCell>
-                <StyledTableCell component="th" scope="row">
+                <StyledTableCell  className="truncate max-w-xs" component="th" scope="row">
                   {row.city}
                 </StyledTableCell>
                 <StyledTableCell align="center">

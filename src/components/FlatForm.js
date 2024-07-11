@@ -1,29 +1,24 @@
 import Box from "@mui/material/Box";
 import { Button, Switch, TextField, Typography } from "@mui/material";
-import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
+import { collection, doc, getDoc } from "firebase/firestore";
 import { db } from "../Firebase";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Alert from '@mui/material/Alert'
+import Alert from "@mui/material/Alert";
 import Api from "../services/api";
-import {  
-  Grid, 
-  FormControlLabel, 
-  CircularProgress,  
-} from '@mui/material';
+import { Grid, FormControlLabel, CircularProgress } from "@mui/material";
 
-
-export default function FlatForm({ type, id}) {
-  const [alertSeverity, setAlertSeverity] = useState(null);
-  const [alertMessage, setAlertMessage] = useState("");
+export default function FlatForm({ type, id }) {
+  // const [alertSeverity, setAlertSeverity] = useState(null);
+  // const [alertMessage, setAlertMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
-  const showAlertMessage = (severity, message) => {
-    setAlertSeverity(severity);
-    setAlertMessage(message);
-    setShowAlert(true);
-  };
-  const api = new Api()
-  console.log(id)
+  // const showAlertMessage = (severity, message) => {
+  //   setAlertSeverity(severity);
+  //   setAlertMessage(message);
+  //   setShowAlert(true);
+  // };
+  const api = new Api();
+  console.log(id);
   const [flatLoaded, setFlatLoaded] = useState(false);
   const currentDate = new Date().toJSON().slice(0, 10);
   const flatsRef = collection(db, "flats");
@@ -38,7 +33,6 @@ export default function FlatForm({ type, id}) {
     dateAvailable: currentDate,
   });
 
-
   const navigate = useNavigate();
   const date = new Date().toJSON().slice(0, 10);
   const city = useRef("");
@@ -50,28 +44,27 @@ export default function FlatForm({ type, id}) {
   const rentPrice = useRef("");
   const dateAvailable = useRef("");
   let refFlat = null;
- 
-  const user =(localStorage.getItem("user_logged"));
-  
+
+  const user = localStorage.getItem("user_logged");
+
   if (id && type !== "create") {
     refFlat = doc(db, "flats", id);
   }
- 
-  const capitalizeFirstLetter = (word) =>{
-    if (!word){
-      return ''
+
+  const capitalizeFirstLetter = (word) => {
+    if (!word) {
+      return "";
     }
     const firstLetter = word.charAt(0).toUpperCase();
     const restOfWord = word.slice(1).toLowerCase();
     return firstLetter + restOfWord;
-  }
-  
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const refUser = doc(db,"users",user)
-     const dataUser = await getDoc(refUser);
-
+    const refUser = doc(db, "users", user);
+    const dataUser = await getDoc(refUser);
 
     const onlyLetters = () => {
       if (
@@ -84,13 +77,10 @@ export default function FlatForm({ type, id}) {
         return true;
       }
     };
-    
 
     const forCity = () => {
       const validate = /^[a-zA-Z\s]+$/; // updated regular expression
-      if (
-        validate.test(city.current.value)
-      ) {
+      if (validate.test(city.current.value)) {
         return true;
       } else {
         return false;
@@ -98,15 +88,12 @@ export default function FlatForm({ type, id}) {
     };
     const forStreet = () => {
       const validate = /^[a-zA-Z\s.,'0-9]+$/; // updated regular expression
-      if (
-        validate.test(streetName.current.value)
-      ) {
+      if (validate.test(streetName.current.value)) {
         return true;
       } else {
         return false;
       }
     };
-
 
     const onlyNumbers = () => {
       const validate = /^[0-9]+$/;
@@ -120,7 +107,7 @@ export default function FlatForm({ type, id}) {
         return false;
       }
     };
-    
+
     let flatForSubmit = {
       city: city.current.value,
       streetName: streetName.current.value,
@@ -130,16 +117,22 @@ export default function FlatForm({ type, id}) {
       yearBuilt: yearBuilt.current.value,
       rentPrice: parseInt(rentPrice.current.value),
       dateAvailable: dateAvailable.current.value,
-      user:(localStorage.getItem("user_logged")),
+      user: localStorage.getItem("user_logged"),
       //nameUser: dataUser.data().firstName,
       //emailUser: dataUser.data().email
-    }
-    
-    console.log(onlyLetters(),forCity() ,forStreet(), onlyNumbers(),  yearBuilt.current.value);
+    };
+
+    console.log(
+      onlyLetters(),
+      forCity(),
+      forStreet(),
+      onlyNumbers(),
+      yearBuilt.current.value
+    );
     if (
       onlyLetters() &&
       forCity() &&
-      forStreet()&&
+      forStreet() &&
       onlyNumbers() &&
       yearBuilt.current.value < 2024 &&
       yearBuilt.current.value > 1900 &&
@@ -148,22 +141,20 @@ export default function FlatForm({ type, id}) {
       streetNumber.current.value &&
       areaSize.current.value &&
       rentPrice.current.value &&
-      dateAvailable.current.value 
+      dateAvailable.current.value
     ) {
-      if(type === 'update'){
-        
-        const  result = await api.patch(`flats/${id}`,  flatForSubmit)
-         /*  if (message ==='Success') {
+      if (type === "update") {
+        const result = await api.patch(`flats/${id}`, flatForSubmit);
+        /*  if (message ==='Success') {
             showAlertMessage("success", "Flat updated successfully.");
             setTimeout(() => {
               navigate("/my-flats", { replace: true });
             }, 2000);
           }*/
-      
       }
-      if(type === 'create'){ 
-        
-      const result =   await api.post("flats" ,flatForSubmit);}
+      if (type === "create") {
+        const result = await api.post("flats", flatForSubmit);
+      }
       setShowAlert(true);
       setTimeout(() => {
         navigate("/my-flats", { replace: false });
@@ -173,28 +164,27 @@ export default function FlatForm({ type, id}) {
     }
   };
   const getFlatData = async () => {
-  console.log(id)
-  let responseFlat = []
-  const result = await api.get(`flats/${id}`)
-  responseFlat = result.data.data
-  console.log(responseFlat)
-  /*  const dataFlat = await getDoc(refFlat);
+    console.log(id);
+    let responseFlat = [];
+    const result = await api.get(`flats/${id}`);
+    responseFlat = result.data.data;
+    console.log(responseFlat);
+    /*  const dataFlat = await getDoc(refFlat);
   const responseFlat = { ...dataFlat.data() };
   const userId = responseFlat.user;
   const refUser = doc(db, "users", userId);
   const dataUser = await getDoc(refUser);
   //responseFlat.firstName = dataUser.data().firstName;
   //responseFlat.lastName = dataUser.data().lastName;*/
-  setFlat(responseFlat);
-  setFlatLoaded(true);
-};
+    setFlat(responseFlat);
+    setFlatLoaded(true);
+  };
   const processData = async () => {
     if (type === "update" || type === "view") {
       await getFlatData();
     } else {
       setFlatLoaded(true);
     }
-    
   };
 
   useEffect(() => {
@@ -206,12 +196,12 @@ export default function FlatForm({ type, id}) {
       onSubmit={handleSubmit}
       component="form"
       sx={{
-        maxWidth: '800px',
-        margin: '2.5% auto',
-        padding: '24px',
-        backgroundColor: '#ffffff',
-        borderRadius: '12px',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+        maxWidth: "800px",
+        margin: "2.5% auto",
+        padding: "24px",
+        backgroundColor: "#ffffff",
+        borderRadius: "12px",
+        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
       }}
     >
       {flatLoaded ? (
@@ -221,17 +211,17 @@ export default function FlatForm({ type, id}) {
               variant="h4"
               component="h2"
               sx={{
-                fontWeight: 'bold',
-                color: '#333',
-                marginBottom: '24px',
-                textAlign: 'center',
+                fontWeight: "bold",
+                color: "#333",
+                marginBottom: "24px",
+                textAlign: "center",
               }}
             >
               Create Your Flat
             </Typography>
           )}
           {showAlert && (
-            <Alert severity="success" sx={{ marginBottom: '24px' }}>
+            <Alert severity="success" sx={{ marginBottom: "24px" }}>
               You have created a new flat.
             </Alert>
           )}
@@ -342,14 +332,14 @@ export default function FlatForm({ type, id}) {
               variant="contained"
               color="primary"
               fullWidth
-              sx={{ marginTop: '24px' }}
+              sx={{ marginTop: "24px" }}
             >
               Submit
             </Button>
           )}
         </>
       ) : (
-        <CircularProgress sx={{ display: 'block', margin: '20px auto' }} />
+        <CircularProgress sx={{ display: "block", margin: "20px auto" }} />
       )}
     </Box>
   );

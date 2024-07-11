@@ -135,7 +135,7 @@ export default function Messages({ flatId }) {
                     }
                     relative
                   `}>
-                    <p className="text-sm whitespace-pre-wrap">{item.message}</p>
+                    <p className="text-sm break-words whitespace-pre-wrap">{item.message}</p>
                     <div className={`
                       absolute w-4 h-4 
                       ${isCurrentUser 
