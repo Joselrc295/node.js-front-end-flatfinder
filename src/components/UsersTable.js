@@ -22,6 +22,8 @@ export default function UsersTable() {
   const [users, setUsers] = useState([]);
   // const [isAscending, setIsAscending] = useState(true);
   // const [flag , setFlag] = useState(false);
+  const [orderBy, setOrderBy] = useState("firstName");
+const [order, setOrder] = useState(1);
 
  
 
@@ -56,28 +58,29 @@ export default function UsersTable() {
       }
       filter+= `filter[flatCountMin]=${flatsCounter.split('-')[0]}&filter[flatCountMax]=${flatsCounter.split('-')[1]}`
      }
-     if(valueSlider){
-      if (filter){
-        filter+='&'
-      }
-      filter+= `filter[ageMin]=${valueSlider[0]}&filter[ageMax]=${valueSlider[1]}`
-     }
-    const api = new Api();
-    const result = await api.get('users/?'+filter)
-    setUsers(result.data.data)
-  //   try {
-  //     const result = await api.get("users");
-  //     console.log(result);
-  //     setUsers(result.data.data);
+     if (valueSlider) {
+      filter += `filter[ageMin]=${valueSlider[0]}&filter[ageMax]=${valueSlider[1]}&`;
+    }
+    filter += `orderBy=${orderBy}&order=${order}`;
+     try {
+      const api = new Api();
+      const result = await api.get('users/?' + filter);
+      setUsers(result.data.data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
 
-  //   } catch (error) {
-  //     console.error("Error fetching data: ", error);
-  //   }
+    
 }
+const handleSort = (column) => {
+  setOrderBy(column);
+  setOrder(order === 1 ? -1 : 1);
+};
+
 
   useEffect(() => {
     getData();
-  }, [userType, flatsCounter, valueSlider]);
+  }, [userType, flatsCounter, valueSlider,orderBy, order]);
 
   return (  
     <div>
@@ -161,16 +164,16 @@ export default function UsersTable() {
         >
           <TableHead className="bg-gray-50">
             <TableRow>
-              <TableCell style={{ cursor: "pointer" }}/* onClick={nameSort}*/ className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              &lt; First Name&gt;
+              <TableCell style={{ cursor: "pointer" }} onClick={() => handleSort('firstName')} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              First Name {orderBy === 'firstName' && (order === 1 ? '▲' : '▼')}
               </TableCell>
               <TableCell
               style={{ cursor: "pointer" }}
-                //onClick={lastNameSort}
+              onClick={() => handleSort('lastName')}
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 align="right"
               >
-               &lt; Last Name&gt;
+              Last Name {orderBy === 'lastName' && (order === 1 ? '▲' : '▼')}
               </TableCell>
               <TableCell
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -194,10 +197,10 @@ export default function UsersTable() {
               style={{ cursor: "pointer" }}
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 align="right"
-                //onClick={flatSort}
+                onClick={() => handleSort('flatCount')}
                 
               >
-               &lt; Flats Count&gt;
+                Flats Count {orderBy === 'flatCount' && (order === 1 ? '▲' : '▼')}
               </TableCell>
               <TableCell
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"

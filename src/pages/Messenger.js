@@ -27,6 +27,4 @@ export default function Messenger(){
         </Container>
       </Box>
     );
-
-    );
 }

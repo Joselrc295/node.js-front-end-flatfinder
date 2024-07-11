@@ -17,7 +17,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 
 
-
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
@@ -45,6 +44,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 const TableFlats = ({ type ,  user, setUser}) => {
   const api = new Api()
+
   const [flats, setFlats] = useState([]);
   const [city, setCity] = useState("");
   const [rentPrice, setRentPrice] = useState(0);
@@ -391,7 +391,7 @@ const TableFlats = ({ type ,  user, setUser}) => {
                 <StyledTableCell component="th" scope="row">
                 {row.flatCreatorEmail}
                 </StyledTableCell>
-                <StyledTableCell component="th" scope="row">
+                <StyledTableCell  className="truncate max-w-xs" component="th" scope="row">
                   {row.city}
                 </StyledTableCell>
                 <StyledTableCell align="center">
