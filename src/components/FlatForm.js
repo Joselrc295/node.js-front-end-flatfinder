@@ -1,7 +1,5 @@
 import Box from "@mui/material/Box";
 import { Button, Switch, TextField, Typography } from "@mui/material";
-import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "../Firebase";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Alert from '@mui/material/Alert'
@@ -26,7 +24,6 @@ export default function FlatForm({ type, id}) {
   console.log(id)
   const [flatLoaded, setFlatLoaded] = useState(false);
   const currentDate = new Date().toJSON().slice(0, 10);
-  const flatsRef = collection(db, "flats");
   const [flat, setFlat] = useState({
     city: "",
     streetName: "",
@@ -53,9 +50,7 @@ export default function FlatForm({ type, id}) {
  
   const user =(localStorage.getItem("user_logged"));
   
-  if (id && type !== "create") {
-    refFlat = doc(db, "flats", id);
-  }
+ 
  
   const capitalizeFirstLetter = (word) =>{
     if (!word){
@@ -69,8 +64,7 @@ export default function FlatForm({ type, id}) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const refUser = doc(db,"users",user)
-     const dataUser = await getDoc(refUser);
+    
 
 
     const onlyLetters = () => {
@@ -122,7 +116,7 @@ export default function FlatForm({ type, id}) {
     };
     
     let flatForSubmit = {
-      city: city.current.value,
+      city: city.current.value.trim(),
       streetName: streetName.current.value,
       streetNumber: streetNumber.current.value,
       areaSize: parseInt(areaSize.current.value),
@@ -131,8 +125,6 @@ export default function FlatForm({ type, id}) {
       rentPrice: parseInt(rentPrice.current.value),
       dateAvailable: dateAvailable.current.value,
       user:(localStorage.getItem("user_logged")),
-      //nameUser: dataUser.data().firstName,
-      //emailUser: dataUser.data().email
     }
     
     console.log(onlyLetters(),forCity() ,forStreet(), onlyNumbers(),  yearBuilt.current.value);
@@ -151,15 +143,7 @@ export default function FlatForm({ type, id}) {
       dateAvailable.current.value 
     ) {
       if(type === 'update'){
-        
         const  result = await api.patch(`flats/${id}`,  flatForSubmit)
-         /*  if (message ==='Success') {
-            showAlertMessage("success", "Flat updated successfully.");
-            setTimeout(() => {
-              navigate("/my-flats", { replace: true });
-            }, 2000);
-          }*/
-      
       }
       if(type === 'create'){ 
         
@@ -173,18 +157,9 @@ export default function FlatForm({ type, id}) {
     }
   };
   const getFlatData = async () => {
-  console.log(id)
   let responseFlat = []
   const result = await api.get(`flats/${id}`)
   responseFlat = result.data.data
-  console.log(responseFlat)
-  /*  const dataFlat = await getDoc(refFlat);
-  const responseFlat = { ...dataFlat.data() };
-  const userId = responseFlat.user;
-  const refUser = doc(db, "users", userId);
-  const dataUser = await getDoc(refUser);
-  //responseFlat.firstName = dataUser.data().firstName;
-  //responseFlat.lastName = dataUser.data().lastName;*/
   setFlat(responseFlat);
   setFlatLoaded(true);
 };

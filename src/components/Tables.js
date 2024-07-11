@@ -11,21 +11,10 @@ import { Box } from "@mui/system";
 import Button from "@mui/material/Button";
 import { useState } from "react";
 import { useEffect } from "react";
-import { db } from "../Firebase";
 import Api from "../services/api";
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  addDoc,
-  doc,
-  getDoc,
-  deleteDoc,
-} from "@firebase/firestore";
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
-import { element } from "prop-types";
+
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -55,8 +44,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 const TableFlats = ({ type ,  user, setUser}) => {
   const api = new Api()
-  const refFav = collection(db, "favorites");
-  const userId =(localStorage.getItem("user_logged"));
   const [flats, setFlats] = useState([]);
   const [city, setCity] = useState("");
   const [rentPrice, setRentPrice] = useState(0);
@@ -65,6 +52,7 @@ const TableFlats = ({ type ,  user, setUser}) => {
   const [loading, setLoading] = useState(false);
   const [isAscending, setIsAscending] = useState(true);
   const [favorite , setFavorite] = useState([])
+  const [debouncedValue, setDebouncedValue] = useState('');
   
   
   const capitalizeFirstLetter = (word) =>{
@@ -79,8 +67,6 @@ const TableFlats = ({ type ,  user, setUser}) => {
 
   const getData = async () => {
     setLoading(true);
-    // const ref = collection(db, "flats");
-    // let arrayWhere = [];
 
     if (type === "my-flats") {
       let allFlats = []
@@ -88,11 +74,6 @@ const TableFlats = ({ type ,  user, setUser}) => {
       const response = await api.get('flats/my/?' + filter)
       console.log(response)
       allFlats = response.data.data
-     /* const search = query(ref, where("user", "==", userId));
-      const data = await getDocs(search);
-      const forRowsMy = data.docs.map((item) => {
-        return { ...item.data(), id: item.id };
-      });*/
       setFlats(allFlats);
     }
     if (type === "favorite-flats") {
@@ -103,19 +84,6 @@ const TableFlats = ({ type ,  user, setUser}) => {
           allFlats.push(element.flatID)
       })
      
-      
-      /*const search = query(refFav, where("userId", "==", userId));
-      const data = await getDocs(search);
-      const allFlats = [];
-      for (const item of data.docs) {
-        const refFlat = doc(db, "flats", item.data().flatId);
-        const dataFlat = await getDoc(refFlat);
-        allFlats.push({
-          ...dataFlat.data(),
-          id: dataFlat.id,
-          favorite: item.id,
-        });
-      }*/
       setFlats(allFlats);
     }
     if (type === "all-flats") {
@@ -125,7 +93,7 @@ const TableFlats = ({ type ,  user, setUser}) => {
       if(filter){
         filter += '&'
       }
-      filter = `filter[city]=${city}`
+      filter += `filter[city]=${city}`
     }
     if(rentPrice){
       if(filter){
@@ -143,46 +111,11 @@ const TableFlats = ({ type ,  user, setUser}) => {
       const response = await api.get('flats/?' + filter);
       allFlats = response.data.data
       console.log(response.data.data)
-     /* if (city) {
-        arrayWhere.push(where("city", "==", city));
-      }
-      if (areaSize) {
-        let settings = areaSize.split("-");
-        arrayWhere.push(where("areaSize", ">=", parseInt(settings[0])));
-        arrayWhere.push(where("areaSize", "<=", parseInt(settings[1])));
-      }
-      if (rentPrice) {
-        let settings = rentPrice.split("-");
-        arrayWhere.push(where("rentPrice", ">=", parseInt(settings[0])));
-        arrayWhere.push(where("rentPrice", "<=", parseInt(settings[1])));
-      }
-      let searchFlats = query(ref, ...arrayWhere);
-      const results = await getDocs(searchFlats);
-      const allFlats = [];
-      for (const item of results.docs) {
-        const search = query(
-          refFav,
-          where("userId", "==", userId),
-          where("flatId", "==", item.id)
-        );
-        const dataFav = await getDocs(search);
-        let favorite = false;
-
-        if (dataFav.docs.length > 0) {
-          favorite = dataFav.docs[0].id;
-        }
-        const flatWhitFav = { ...item.data(), id: item.id, favorite: favorite };
-        allFlats.push(flatWhitFav);
-      }*/
-        const responseFavorites = await api.get('favorites/home') ;
-        const dataFavorites =  responseFavorites.data.data;
-        setFavorite(dataFavorites)
-        
-        
-        console.log(dataFavorites)
-
+      const responseFavorites = await api.get('favorites/home') ;
+      const dataFavorites =  responseFavorites.data.data;
+      setFavorite(dataFavorites)
       
-      setFlats(allFlats);
+    setFlats(allFlats);
     }
     setLoading(false);
   };
@@ -253,13 +186,20 @@ const TableFlats = ({ type ,  user, setUser}) => {
     setFlats(sortedData) ; 
     setIsAscending(!isAscending)
   }
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(city);
+    }, 500); // 500ms delay
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [city]);
 
   useEffect(() => {
     getData();
-  }, [city, areaSize,rentPrice]);
-  useEffect(() => {
-    getData();
-  }, [flag]);
+  }, [city, areaSize,rentPrice, flag]);
+
 
   console.log(flats)
 
@@ -279,7 +219,7 @@ const TableFlats = ({ type ,  user, setUser}) => {
             variant="outlined"
             value={city}
             onChange={(e) =>{
-              const inputValue = e.target.value.trim()
+              const inputValue = e.target.value
               const capitalized = capitalizeFirstLetter(inputValue)
               setCity(capitalized)}}
             fullWidth

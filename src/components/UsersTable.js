@@ -218,23 +218,23 @@ export default function UsersTable() {
           <TableBody className="bg-white divide-y divide-gray-200">
             {users.map((row) => (
               <TableRow key={row._id}>
-                <TableCell className="px-6 py-4 whitespace-nowrap">
+                <TableCell className="truncate px-6 py-4 whitespace-nowrap">
                   {row.firstName}
                 </TableCell>
-                <TableCell className="px-6 py-4 whitespace-nowrap">
+                <TableCell className="truncate px-6 py-4 whitespace-nowrap">
                   {row.lastName}
                 </TableCell>
-                <TableCell className="px-6 py-4 whitespace-nowrap">
+                <TableCell className="truncate px-6 py-4 whitespace-nowrap">
                   {row.email}
                 </TableCell>
-                <TableCell className="px-6 py-4 whitespace-nowrap">
+                <TableCell className="truncate px-6 py-4 whitespace-nowrap">
                   {row.birthday}
                 </TableCell>
-                <TableCell className="px-6 py-4 whitespace-nowrap">
+                <TableCell className="truncate px-6 py-4 whitespace-nowrap">
                   {row.role}
                 </TableCell>
 
-                <TableCell className="px-6 py-4 whitespace-nowrap">
+                <TableCell className="truncate px-6 py-4 whitespace-nowrap">
                   {row.flatCount}
                 </TableCell>
                 <TableCell className="px-6 py-4 whitespace-nowrap">
