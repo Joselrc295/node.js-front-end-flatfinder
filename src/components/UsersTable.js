@@ -84,66 +84,66 @@ const handleSort = (column) => {
 
   return (  
     <div>
-    <div  className="flex justify-center">
-    <Box
-     border={0}
-      textAlign={"center"}
-      className="p-4 rounded-2xl my-3 shadow-md"
-      component={"form"}
-     
-    >
-      <TextField
-        select
-        label={"User Type"}
-        variant="outlined"
-        SelectProps={{ native: true }}
-        value={userType}
-        onChange={(e) => setUserType(e.target.value)}
-        className="my-4 mx-4 "
+    <div className="flex justify-center my-6">
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        className="p-6 rounded-2xl shadow-lg bg-white w-full max-w-5xl"
+        component={"form"}
       >
-        <option key={"none"} value={""}></option>
-        <option key={"100-200"} value={"admin"}>
-          Admin
-        </option>
-        <option key={"200-300"} value={"landlord"}>
-          Landlord
-        </option>
-        <option key={"300-400"} value={"renter"}>
-          Renter
-        </option>
-      </TextField>
+        <TextField
+          select
+          label={"User Type"}
+          variant="outlined"
+          SelectProps={{ native: true }}
+          value={userType}
+          onChange={(e) => setUserType(e.target.value)}
+          className="mx-2 w-1/4"
+        >
+          <option key={"none"} value={""}></option>
+          <option key={"admin"} value={"admin"}>
+            Admin
+          </option>
+          <option key={"landlord"} value={"landlord"}>
+            Landlord
+          </option>
+          <option key={"renter"} value={"renter"}>
+            Renter
+          </option>
+        </TextField>
 
-      <TextField
-        select
-        label={"Flats Count"}
-        variant="outlined"
-        SelectProps={{ native: true }}
-        value={flatsCounter}
-        onChange={(e) => setFlatsCounter(e.target.value)}
-        className="my-4"
-      >
-        <option key={"none"} value={""}></option>
-        <option key={"100-200"} value={"0-5"}>
-          0-5
-        </option>
-        <option key={"200-300"} value={"6-10"}>
-          6-10
-        </option>
-        <option key={"300-400"} value={"11-30"}>
-          11-30
-        </option>
-        <option key={"400-500"} value={"30-61"}>
-          30 - 61
-        </option>
-        <option key={"61-max"} value={"61-999999"}>
-          61+
-        </option>
-      </TextField>
+        <TextField
+          select
+          label={"Flats Count"}
+          variant="outlined"
+          SelectProps={{ native: true }}
+          value={flatsCounter}
+          onChange={(e) => setFlatsCounter(e.target.value)}
+          className="mx-2 w-1/4"
+        >
+          <option key={"none"} value={""}></option>
+          <option key={"0-5"} value={"0-5"}>
+            0-5
+          </option>
+          <option key={"6-10"} value={"6-10"}>
+            6-10
+          </option>
+          <option key={"11-30"} value={"11-30"}>
+            11-30
+          </option>
+          <option key={"30-61"} value={"30-61"}>
+            30-61
+          </option>
+          <option key={"61+"} value={"61-999999"}>
+            61+
+          </option>
+        </TextField>
 
-      <div className="w-56 my-6 mx-auto">
-        <Typography id="input-slider" gutterBottom>
-          Age
-        </Typography>
+        <div className="w-1/2 mx-2">
+          <Typography id="input-slider" gutterBottom className="text-left font-semibold text-gray-700">
+            Age
+          </Typography>
           <Slider
             max={120}
             min={18}
@@ -152,10 +152,10 @@ const handleSort = (column) => {
             onChange={(e, newValue) => setValueSlider(newValue)}
             getAriaLabel={() => "Age Range"}
             valueLabelDisplay="auto"
-            className="flex-grow"
+            className="mx-4"
           />
-      </div>
-    </Box>
+        </div>
+      </Box>
     </div>
       <TableContainer>
       <Table

@@ -10,11 +10,10 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import { db } from "../Firebase";
 import { collection } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
 import Api from "../services/api";
@@ -49,6 +48,13 @@ export default function LogIn() {
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState(null);
   const [alertMessage, setAlertMessage] = useState("");
+
+  useEffect(() => {
+    const isAuthenticated = localStorage.getItem('user_logged');
+    if (isAuthenticated) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [navigate]);
 
   const showAlertMessage = (severity, message) => {
     setAlertSeverity(severity);
@@ -119,7 +125,6 @@ export default function LogIn() {
               flexDirection: "column",
               alignItems: "center",
               backgroundColor: "white/30", // Fondo transparente
-             
               padding: 4, // Agregar padding si es necesario
               borderRadius: 1,
             }}

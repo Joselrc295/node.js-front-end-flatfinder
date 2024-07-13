@@ -115,67 +115,70 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
     }
 
     if (type === "create") {
-      if (
-        firstNameRef.current.value.length < 2 ||
-        lastNameRef.current.value.length < 2
-      ) {
-        showAlertMessage("error", "Please more than two letters");
-        setAllFieldsFilled(false);
-        return;
-      } else {
-        setAllFieldsFilled(true);
+      try {
+        if (
+          firstNameRef.current.value.length < 2 ||
+          lastNameRef.current.value.length < 2
+        ) {
+          showAlertMessage("error", "Please more than two letters");
+          setAllFieldsFilled(false);
+          return;
+        } else {
+          setAllFieldsFilled(true);
+        }
+    
+        if (
+          firstNameRef.current.value === "" ||
+          lastNameRef.current.value === "" ||
+          emailRef.current.value === "" ||
+          passwordRef.current.value === "" ||
+          confirmPassword === "" ||
+          birthdayRef.current.value === "" ||
+          roleRef.current.value === ""
+        ) {
+          console.log("estoy aaa");
+          showAlertMessage("error", "Please fill in all required fields.");
+          setAllFieldsFilled(false);
+          return;
+        }
+    
+        if (passwordRef.current.value !== confirmPassword) {
+          showAlertMessage("error", "The passwords do not match.");
+          return;
+        }
+    
+        let user = {
+          firstName: firstNameRef.current.value,
+          lastName: lastNameRef.current.value,
+          email: emailRef.current.value,
+          password: passwordRef.current.value,
+          birthday: birthdayRef.current.value,
+          role: roleRef.current.value,
+        };
+    
+        user = { ...user, password: passwordRef.current.value };
+    
+        const api = new Api();
+        const result = await api.post("users/register", user);
+        const message = result.data.message;
+        const data = result.data.data;
+        const token = result.data.token;
+    
+        if (message === "User created successfully" && token) {
+          localStorage.setItem("user_logged", token);
+          localStorage.setItem("user_data_logged", JSON.stringify(data));
+          showAlertMessage("success", "User created successfully.");
+          setTimeout(() => {
+            navigate("/dashboard", { replace: true });
+          }, 2000);
+        }
+      } catch (error) {
+        if(error.response.data.code===11000){
+          showAlertMessage("error","The email already exists")
+        }
       }
-      if (
-        firstNameRef.current.value === "" ||
-        lastNameRef.current.value === "" ||
-        emailRef.current.value === "" ||
-        passwordRef.current.value === "" ||
-        confirmPassword === "" ||
-        birthdayRef.current.value === "" ||
-        roleRef.current.value === ""
-      ) {
-        console.log("estoy aaa");
-        showAlertMessage("error", "Please fill in all required fields.");
-        setAllFieldsFilled(false);
-        return;
-      }
-      if (passwordRef.current.value !== confirmPassword) {
-        // Compara las contraseñas
-        showAlertMessage("error", "The passwords do not match.");
-        return;
-      }
-      let user = {
-        firstName: firstNameRef.current.value,
-        lastName: lastNameRef.current.value,
-        email: emailRef.current.value,
-        password: passwordRef.current.value,
-        birthday: birthdayRef.current.value,
-        role: roleRef.current.value,
-      };
-
-      user = { ...user, password: passwordRef.current.value };
-      // const docRef = await addDoc(refCreate, user);
-      const api = new Api();
-      const result = await api.post("users/register", user);
-      const message = result.data.message;
-      const data = result.data.data;
-      const token = result.data.token;
-      if (message === "User created successfully" && token) {
-        localStorage.setItem("user_logged", token);
-        localStorage.setItem("user_data_logged", JSON.stringify(data));
-        showAlertMessage("success", "User created successfully.");
-        setTimeout(() => {
-          navigate("/dashboard", { replace: true });
-        }, 2000);
-      }
-      // const useDocRef =result.data.data._id;
-      //   localStorage.setItem("user_logged", (useDocRef));
-      //   showAlertMessage("success", "User created successfully.");
-      //   setTimeout(() => {
-      //    navigate("/dashboard", { replace: true });
-      //  }, 2000);
-      // }
     }
+    
     if (type === "update") {
       const userUpdate = {
         firstName: user.firstName,
@@ -218,6 +221,10 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
         }
       } catch (error) {
         console.error("Error updating user:", error);
+        if(error.response.data.status==="fail"){
+          showAlertMessage("error","The email already exists")
+        }
+
       }
     }
   };
