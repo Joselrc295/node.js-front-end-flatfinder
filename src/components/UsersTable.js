@@ -11,28 +11,27 @@ import TableRow from "@mui/material/TableRow";
 import { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import Api from "../services/api";
+import Pagination from "@mui/material/Pagination";
+import Stack from "@mui/material/Stack";
 
 // @Params: type: "my-flats" | "all-flats" | "favorite-flats"
 export default function UsersTable() {
-  // const ref = collection(db, "users");
-  // const refFlats = collection(db, "flats");
   const [userType, setUserType] = useState("");
   const [flatsCounter, setFlatsCounter] = useState("");
   const [valueSlider, setValueSlider] = React.useState([18, 120]);
   const [users, setUsers] = useState([]);
-  // const [isAscending, setIsAscending] = useState(true);
-  // const [flag , setFlag] = useState(false);
   const [orderBy, setOrderBy] = useState("firstName");
-const [order, setOrder] = useState(1);
-
- 
+  const [order, setOrder] = useState(1);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const rowsPerPage = 5;
 
   const removeUser = async (_id) => {
     try {
       const api = new Api();
       const response = await api.delete(`users/delete/${_id}`);
       if (response.status === 200) {
-        console.log(response.data.message);    
+        console.log(response.data.message);
         getData();
       } else {
         console.error("Error deleting user:", response.data.message);
@@ -44,136 +43,151 @@ const [order, setOrder] = useState(1);
 
   const getData = async () => {
     // let filter = `role=${userType}&flatCountMin=${flatsCounter.split('-')[0]}&flatCountMax=${flatsCounter.split('-')[1]}&ageMin=${valueSlider[0]}&ageMax=${valueSlider[1]}`;
-   
-    let filter =''
-     if (userType) {
-      if (filter){
-        filter+='&'
+
+    let filter = "";
+    if (userType) {
+      if (filter) {
+        filter += "&";
       }
-      filter = `filter[role]=${userType}`
-     }
-     if (flatsCounter) {
-      if (filter){
-        filter+='&'
-      }
-      filter+= `filter[flatCountMin]=${flatsCounter.split('-')[0]}&filter[flatCountMax]=${flatsCounter.split('-')[1]}`
-     }
-     if (valueSlider) {
-      filter += `filter[ageMin]=${valueSlider[0]}&filter[ageMax]=${valueSlider[1]}&`;
+      filter = `filter[role]=${userType}`;
     }
+    if (flatsCounter) {
+      if (filter) {
+        filter += "&";
+      }
+      filter += `filter[flatCountMin]=${
+        flatsCounter.split("-")[0]
+      }&filter[flatCountMax]=${flatsCounter.split("-")[1]}`;
+    }
+    if (valueSlider) {
+      filter += "&";
+    }
+    filter += `filter[ageMin]=${valueSlider[0]}&filter[ageMax]=${valueSlider[1]}&`;
+    
+    if (filter) filter += '&';
     filter += `orderBy=${orderBy}&order=${order}`;
-     try {
+    
+    if (filter) filter += '&';
+    filter += `page=${page}&limit=${rowsPerPage}`;
+
+    try {
       const api = new Api();
-      const result = await api.get('users/?' + filter);
+      const result = await api.get("users/?" + filter);
       setUsers(result.data.data);
+      setTotalPages(result.data.totalPages); 
     } catch (error) {
       console.error("Error fetching users:", error);
     }
-
-    
-}
-const handleSort = (column) => {
-  setOrderBy(column);
-  setOrder(order === 1 ? -1 : 1);
-};
-
-
+  };
+  const handleSort = (column) => {
+    setOrderBy(column);
+    setOrder(order === 1 ? -1 : 1);
+  };
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
   useEffect(() => {
     getData();
-  }, [userType, flatsCounter, valueSlider,orderBy, order]);
+  }, [userType, flatsCounter, valueSlider, orderBy, order, page]);
 
-  return (  
+  return (
     <div>
-    <div  className="flex justify-center">
-    <Box
-     border={0}
-      textAlign={"center"}
-      className="p-4 rounded-2xl my-3 shadow-md"
-      component={"form"}
-     
-    >
-      <TextField
-        select
-        label={"User Type"}
-        variant="outlined"
-        SelectProps={{ native: true }}
-        value={userType}
-        onChange={(e) => setUserType(e.target.value)}
-        className="my-4 mx-4 "
-      >
-        <option key={"none"} value={""}></option>
-        <option key={"100-200"} value={"admin"}>
-          Admin
-        </option>
-        <option key={"200-300"} value={"landlord"}>
-          Landlord
-        </option>
-        <option key={"300-400"} value={"renter"}>
-          Renter
-        </option>
-      </TextField>
-
-      <TextField
-        select
-        label={"Flats Count"}
-        variant="outlined"
-        SelectProps={{ native: true }}
-        value={flatsCounter}
-        onChange={(e) => setFlatsCounter(e.target.value)}
-        className="my-4"
-      >
-        <option key={"none"} value={""}></option>
-        <option key={"100-200"} value={"0-5"}>
-          0-5
-        </option>
-        <option key={"200-300"} value={"6-10"}>
-          6-10
-        </option>
-        <option key={"300-400"} value={"11-30"}>
-          11-30
-        </option>
-        <option key={"400-500"} value={"30-61"}>
-          30 - 61
-        </option>
-        <option key={"61-max"} value={"61-999999"}>
-          61+
-        </option>
-      </TextField>
-
-      <div className="w-56 my-6 mx-auto">
-        <Typography id="input-slider" gutterBottom>
-          Age
-        </Typography>
-          <Slider
-            max={120}
-            min={18}
-            step={5}
-            value={valueSlider}
-            onChange={(e, newValue) => setValueSlider(newValue)}
-            getAriaLabel={() => "Age Range"}
-            valueLabelDisplay="auto"
-            className="flex-grow"
-          />
-      </div>
-    </Box>
-    </div>
-      <TableContainer>
-      <Table
-          className="min-w-full divide-gray-200"
-          aria-label="simple table"
+      <div className="flex justify-center my-6">
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          className="p-6 rounded-2xl shadow-lg bg-white w-full max-w-5xl"
+          component={"form"}
         >
+          <TextField
+            select
+            label={"User Type"}
+            variant="outlined"
+            SelectProps={{ native: true }}
+            value={userType}
+            onChange={(e) => setUserType(e.target.value)}
+            className="mx-2 w-1/4"
+          >
+            <option key={"none"} value={""}></option>
+            <option key={"admin"} value={"admin"}>
+              Admin
+            </option>
+            <option key={"landlord"} value={"landlord"}>
+              Landlord
+            </option>
+            <option key={"renter"} value={"renter"}>
+              Renter
+            </option>
+          </TextField>
+
+          <TextField
+            select
+            label={"Flats Count"}
+            variant="outlined"
+            SelectProps={{ native: true }}
+            value={flatsCounter}
+            onChange={(e) => setFlatsCounter(e.target.value)}
+            className="mx-2 w-1/4"
+          >
+            <option key={"none"} value={""}></option>
+            <option key={"0-5"} value={"0-5"}>
+              0-5
+            </option>
+            <option key={"6-10"} value={"6-10"}>
+              6-10
+            </option>
+            <option key={"11-30"} value={"11-30"}>
+              11-30
+            </option>
+            <option key={"30-61"} value={"30-61"}>
+              30-61
+            </option>
+            <option key={"61+"} value={"61-999999"}>
+              61+
+            </option>
+          </TextField>
+
+          <div className="w-1/2 mx-2">
+            <Typography
+              id="input-slider"
+              gutterBottom
+              className="text-left font-semibold text-gray-700"
+            >
+              Age
+            </Typography>
+            <Slider
+              max={120}
+              min={18}
+              step={5}
+              value={valueSlider}
+              onChange={(e, newValue) => setValueSlider(newValue)}
+              getAriaLabel={() => "Age Range"}
+              valueLabelDisplay="auto"
+              className="mx-4"
+            />
+          </div>
+        </Box>
+      </div>
+      <TableContainer>
+        <Table className="min-w-full divide-gray-200" aria-label="simple table">
           <TableHead className="bg-gray-50">
             <TableRow>
-              <TableCell style={{ cursor: "pointer" }} onClick={() => handleSort('firstName')} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              First Name {orderBy === 'firstName' && (order === 1 ? '▲' : '▼')}
+              <TableCell
+                style={{ cursor: "pointer" }}
+                onClick={() => handleSort("firstName")}
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                First Name{" "}
+                {orderBy === "firstName" && (order === 1 ? "▲" : "▼")}
               </TableCell>
               <TableCell
-              style={{ cursor: "pointer" }}
-              onClick={() => handleSort('lastName')}
+                style={{ cursor: "pointer" }}
+                onClick={() => handleSort("lastName")}
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 align="right"
               >
-              Last Name {orderBy === 'lastName' && (order === 1 ? '▲' : '▼')}
+                Last Name {orderBy === "lastName" && (order === 1 ? "▲" : "▼")}
               </TableCell>
               <TableCell
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -194,13 +208,13 @@ const handleSort = (column) => {
                 Role
               </TableCell>
               <TableCell
-              style={{ cursor: "pointer" }}
+                style={{ cursor: "pointer" }}
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 align="right"
-                onClick={() => handleSort('flatCount')}
-                
+                onClick={() => handleSort("flatCount")}
               >
-                Flats Count {orderBy === 'flatCount' && (order === 1 ? '▲' : '▼')}
+                Flats Count{" "}
+                {orderBy === "flatCount" && (order === 1 ? "▲" : "▼")}
               </TableCell>
               <TableCell
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -239,19 +253,29 @@ const handleSort = (column) => {
                   {row.flatCount}
                 </TableCell>
                 <TableCell className="px-6 py-4 whitespace-nowrap">
-                  <Button href={`update-profile/${row._id}`} variant="contained">
+                  <Button
+                    href={`update-profile/${row._id}`}
+                    variant="contained"
+                  >
                     Edit
                   </Button>
                 </TableCell>
-               <TableCell className="px-6 py-4 whitespace-nowrap">
-               <Button onClick={() => removeUser(row._id)}>Delete</Button>
-                </TableCell> 
+                <TableCell className="px-6 py-4 whitespace-nowrap">
+                  <Button onClick={() => removeUser(row._id)}>Delete</Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
-        
       </TableContainer>
+      <Stack spacing={2} className="my-4">
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={handlePageChange}
+          color="primary"
+        />
+      </Stack>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { db } from "../Firebase";
 import { Box, Button, TextField } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
 import Api from "../services/api";
+import whatsapp from "../Imagenes/1_qR2E0Ic0gtspweMcUr6WWw_batcheditor_fotor.jpg"
 
 export default function Messages({ flatId }) {
   const ref = doc(db, "flats", flatId);
@@ -12,7 +13,6 @@ export default function Messages({ flatId }) {
 
   const [flat, setFlat] = useState({});
   const [messages, setMessages] = useState([]);
-  const [messageSent, setMessageSent] = useState(false);
   const [responseInput, setResponseInput] = useState("");
   const messageInput = useRef("");
   const userId = JSON.parse(localStorage.getItem("user_data_logged")).id;
@@ -66,10 +66,7 @@ export default function Messages({ flatId }) {
 
       if (response.data.status === 'success') {
         messageInput.current.value = "";
-        setMessageSent(true);
-        setTimeout(() => {
-          setMessageSent(false);
-        }, 3000);
+
         await getMessages();
       } else {
         console.error('Error sending message:', response.data.message);
@@ -105,22 +102,23 @@ export default function Messages({ flatId }) {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen ">
-      <div className="w-full max-w-4xl h-[80vh] p-4 bg-white rounded-lg  flex flex-col">
+    <div className="flex justify-center items-center h-screen">
+      <div className="w-full max-w-4xl h-[80vh] p-4 bg-white bg-opacity-90 rounded-lg flex flex-col">
         <h1 className="text-center text-2xl font-bold mb-4 text-gray-800">Messenger</h1>
-        <div 
-          className="flex-grow overflow-auto p-4 bg-[#e5ddd5] rounded-lg mb-4"
+        <div
+          className="flex-grow overflow-auto p-4  rounded-lg mb-4"
           ref={messagesContainerRef}
-          style={{scrollbarWidth: 'thin', scrollbarColor: '#CBD5E0 #EDF2F7'}}
+          style={{ scrollbarWidth: 'thin', scrollbarColor: '#CBD5E0 #EDF2F7',backgroundImage: `url(${whatsapp})`, backgroundSize: 'cover' }}
+         
         >
           {messages.map((item) => {
-            const messageTime = new Date(item.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const messageTime = new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const messageDate = new Date(item.createdAt).toLocaleDateString();
             let isCurrentUser = false;
             if (item.userID) {
               isCurrentUser = item.userID._id === userId;
             }
-            console.log("aqui",item, isCurrentUser, userId);
+            console.log("aqui", item, isCurrentUser, userId);
             return (
               <div
                 key={item._id}
@@ -129,8 +127,8 @@ export default function Messages({ flatId }) {
                 <div className={`max-w-[70%] ${isCurrentUser ? 'order-2' : 'order-1'}`}>
                   <div className={`
                     rounded-lg p-3 
-                    ${isCurrentUser 
-                      ? 'bg-[#DCF8C6] text-black rounded-tr-none shadow-md' 
+                    ${isCurrentUser
+                      ? 'bg-[#DCF8C6] text-black rounded-tr-none shadow-md'
                       : 'bg-white text-black rounded-tl-none shadow-md'
                     }
                     relative
@@ -138,16 +136,16 @@ export default function Messages({ flatId }) {
                     <p className="text-sm break-words whitespace-pre-wrap">{item.message}</p>
                     <div className={`
                       absolute w-4 h-4 
-                      ${isCurrentUser 
-                        ? 'right-0 -mr-2 top-0 bg-[#DCF8C6] shadow-md' 
+                      ${isCurrentUser
+                        ? 'right-0 -mr-2 top-0 bg-[#DCF8C6] shadow-md'
                         : 'left-0 -ml-2 top-0 bg-white shadow-md'
                       }
                       transform rotate-45
                     `}></div>
                   </div>
                   <div className={`text-xs mt-1 ${isCurrentUser ? 'text-right' : 'text-left'}`}>
-                    <span className="font-semibold mr-2">{item.userID ? item.userID.firstName : 'Unknown'}</span>
-                    <span className="text-gray-500">{messageTime}</span>
+                    <span className="text-white font-semibold mr-2">{item.userID ? item.userID.firstName : 'Unknown'}</span>
+                    <span className="text-white font-semibold">{messageTime}</span>
                   </div>
                 </div>
               </div>
@@ -169,7 +167,7 @@ export default function Messages({ flatId }) {
             className="flex-grow"
             variant="outlined"
             size="small"
-            InputProps={{ 
+            InputProps={{
               className: "bg-white rounded-md",
               style: { fontSize: '0.9rem' }
             }}
