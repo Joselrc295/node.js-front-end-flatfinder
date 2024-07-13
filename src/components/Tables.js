@@ -42,9 +42,10 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-const TableFlats = ({ type ,  user, setUser}) => {
+const TableFlats = ({ type ,  user}) => {
   const api = new Api()
-
+  const [orderBy, setOrderBy] = useState("firstName");
+  const [order, setOrder] = useState(1);
   const [flats, setFlats] = useState([]);
   const [city, setCity] = useState("");
   const [rentPrice, setRentPrice] = useState(0);
@@ -54,6 +55,8 @@ const TableFlats = ({ type ,  user, setUser}) => {
   const [isAscending, setIsAscending] = useState(true);
   const [favorite , setFavorite] = useState([])
   const [debouncedValue, setDebouncedValue] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   
   
   const capitalizeFirstLetter = (word) =>{
@@ -66,7 +69,7 @@ const TableFlats = ({ type ,  user, setUser}) => {
   }
   
 
-  const getData = async () => {
+  const getData = async (page) => {
     setLoading(true);
 
     if (type === "my-flats") {
@@ -89,7 +92,7 @@ const TableFlats = ({ type ,  user, setUser}) => {
     }
     if (type === "all-flats") {
       let allFlats = [] ;
-      let filter = `filter[status]=${true}`
+      let filter = `page=${currentPage}&limit=5&filter[status]=${true}`
       if(city){
       if(filter){
         filter += '&'
@@ -109,13 +112,18 @@ const TableFlats = ({ type ,  user, setUser}) => {
       }
       filter+= `filter[areaSizeMin]=${areaSize.split('-')[0]}&filter[areaSizeMax]=${areaSize.split('-')[1]}`
     }
+    filter += `&orderBy=${orderBy}&order=${order}`
       const response = await api.get('flats/?' + filter);
       allFlats = response.data.data
-      console.log(response.data.data)
+      let count = response.data.totalPages
+      console.log(count)
       const responseFavorites = await api.get('favorites/home') ;
       const dataFavorites =  responseFavorites.data.data;
+      setTotalPages(count);
       setFavorite(dataFavorites)
       
+      
+
     setFlats(allFlats);
     }
     setLoading(false);
@@ -143,50 +151,11 @@ const TableFlats = ({ type ,  user, setUser}) => {
     setFlag(!flag);
   }
   
-  const handleSort = () =>{
-    const sortedData = [...flats]
-    sortedData.sort((a , b) =>{
-      const  cityA = a.city.toLowerCase()
-      const  cityB = b.city.toLowerCase()
-      if(isAscending){
-        return  cityA.localeCompare(cityB)
-      }else{
-        return cityB.localeCompare(cityA);
-      }
-    })
-    setFlats(sortedData)
-    setIsAscending(!isAscending);
-  }
+  const handleSort = (column) => {
+    setOrderBy(column);
+    setOrder(order === 1 ? -1 : 1);
+  };
 
-  const handleAreaSort = () =>{
-    const sortedData = [...flats]
-    sortedData.sort((a , b)=>{
-      const areaSizeA = a.areaSize
-      const areaSizeB = b.areaSize
-      if(isAscending){
-        return areaSizeA - areaSizeB
-      }else{
-        return areaSizeB - areaSizeA
-      }
-    })
-    setFlats(sortedData) ; 
-    setIsAscending(!isAscending)
-  }
-
-  const handlePriceSort = () =>{
-    const sortedData = [...flats]
-    sortedData.sort((a , b)=>{
-      const priceA = a.rentPrice
-      const priceB = b.rentPrice
-      if(isAscending){
-        return priceA - priceB
-      }else{
-        return priceB - priceA
-      }
-    })
-    setFlats(sortedData) ; 
-    setIsAscending(!isAscending)
-  }
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedValue(city);
@@ -197,9 +166,13 @@ const TableFlats = ({ type ,  user, setUser}) => {
     };
   }, [city]);
 
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
   useEffect(() => {
     getData();
-  }, [city, areaSize,rentPrice, flag]);
+  }, [city, areaSize,rentPrice, flag, order, currentPage]);
 
 
   console.log(flats)
@@ -209,7 +182,7 @@ const TableFlats = ({ type ,  user, setUser}) => {
       {type === "all-flats" && (
         <Box
           textAlign={"center"}
-          sx={{ width: "60%", marginLeft: "20%", marginTop: "50px" }}
+          sx={{ width: "60%", marginLeft: "20%", marginTop: "50px", display: 'flex' }}
           component={"form"}
           boxShadow={3}
           p={4}
@@ -224,7 +197,7 @@ const TableFlats = ({ type ,  user, setUser}) => {
               const capitalized = capitalizeFirstLetter(inputValue)
               setCity(capitalized)}}
             fullWidth
-            sx={{ marginBottom: "20px" }}
+            sx={{ margin: "20px" }}
           />
           <TextField
             select
@@ -234,7 +207,7 @@ const TableFlats = ({ type ,  user, setUser}) => {
             value={areaSize}
             onChange={(e) => setAreaSize(e.target.value)}
             fullWidth
-            sx={{ marginBottom: "20px" }}
+            sx={{ margin: "20px" }}
           >
             <option key={"none"} value={""}></option>
             <option key={"100-200"} value={"100-200"}>
@@ -286,7 +259,7 @@ const TableFlats = ({ type ,  user, setUser}) => {
             value={rentPrice}
             onChange={(e) => setRentPrice(e.target.value)}
             fullWidth
-            sx={{ marginBottom: "20px" }}
+            sx={{ margin: "20px" }} 
           >
             <option key={"none"} value={""}></option>
             <option key={"100-200"} value={"100-200"}>
@@ -344,7 +317,7 @@ const TableFlats = ({ type ,  user, setUser}) => {
           <CircularProgress />
         </div>
       ) :(
-      <div className="flex justify-center content-center">
+      <div className="justify-center ml-[10%] content-center">
         <TableContainer 
         className="flex justify-between"
         sx={{
@@ -360,13 +333,13 @@ const TableFlats = ({ type ,  user, setUser}) => {
             <TableRow>
             <StyledTableCell align="center">Owner</StyledTableCell>
             <StyledTableCell align="center">Email</StyledTableCell>
-              <StyledTableCell style={{ cursor: "pointer" }} onClick={handleSort} align="center"> &lt;City&gt; </StyledTableCell>
+              <StyledTableCell style={{ cursor: "pointer" }} onClick={()=>handleSort('city')} align="center"> &lt;City&gt; {orderBy === 'city' && (order === 1 ? '▲' : '▼')}</StyledTableCell>
               <StyledTableCell align="center">Street</StyledTableCell>
               <StyledTableCell align="center">Street Number</StyledTableCell>
-              <StyledTableCell style={{ cursor: "pointer" }} onClick={handleAreaSort} align="center">&lt;Area Size&gt;</StyledTableCell>
+              <StyledTableCell style={{ cursor: "pointer" }} onClick={()=>handleSort('areaSize')} align="center">&lt;Area Size&gt;</StyledTableCell>
               <StyledTableCell align="center">Has AC</StyledTableCell>
               <StyledTableCell align="center">Year Built</StyledTableCell>
-              <StyledTableCell style={{ cursor: "pointer" }} onClick={handlePriceSort} align="center">&lt;Rent Price&gt;</StyledTableCell>
+              <StyledTableCell style={{ cursor: "pointer" }} onClick={()=>handleSort('rentPrice')} align="center">&lt;Rent Price&gt;</StyledTableCell>
               <StyledTableCell align="center">Date Available</StyledTableCell>
               {type==="favorite-flats" && type ==="my-flats" && type !=="favorite-flats" ?(<StyledTableCell align="center">View</StyledTableCell>):(<StyledTableCell align="center">Favorites</StyledTableCell>) }
               {type==="favorite-flats"&& type ==="my-flats" && type !=="favorite-flats"?(<StyledTableCell align="center">Edit</StyledTableCell>):(<StyledTableCell align="center">View</StyledTableCell>) }
@@ -464,6 +437,22 @@ const TableFlats = ({ type ,  user, setUser}) => {
           </TableBody>
         </Table>
       </TableContainer>
+      <Box>
+      <Button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </Button>
+        <span>Page {currentPage} of {totalPages}</span>
+        <Button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </Button>
+ 
+      </Box>
       </div>
       )}
     </>
