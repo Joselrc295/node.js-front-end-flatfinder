@@ -11,8 +11,6 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useRef, useEffect, useState } from "react";
-import { db } from "../Firebase";
-import { collection } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
@@ -42,7 +40,6 @@ const defaultTheme = createTheme();
 export default function LogIn() {
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
-  const usersRef = collection(db, "users");
   const navigate = useNavigate();
   const [isProgress, setIsProgress] = useState(false);
   const [showAlert, setShowAlert] = useState(false);

@@ -13,7 +13,6 @@ export default function Messages({ flatId }) {
 
   const [flat, setFlat] = useState({});
   const [messages, setMessages] = useState([]);
-  const [messageSent, setMessageSent] = useState(false);
   const [responseInput, setResponseInput] = useState("");
   const messageInput = useRef("");
   const userId = JSON.parse(localStorage.getItem("user_data_logged")).id;
@@ -67,10 +66,7 @@ export default function Messages({ flatId }) {
 
       if (response.data.status === 'success') {
         messageInput.current.value = "";
-        setMessageSent(true);
-        setTimeout(() => {
-          setMessageSent(false);
-        }, 3000);
+
         await getMessages();
       } else {
         console.error('Error sending message:', response.data.message);
@@ -148,8 +144,8 @@ export default function Messages({ flatId }) {
                     `}></div>
                   </div>
                   <div className={`text-xs mt-1 ${isCurrentUser ? 'text-right' : 'text-left'}`}>
-                    <span className="font-semibold mr-2">{item.userID ? item.userID.firstName : 'Unknown'}</span>
-                    <span className="text-gray-500">{messageTime}</span>
+                    <span className="text-white font-semibold mr-2">{item.userID ? item.userID.firstName : 'Unknown'}</span>
+                    <span className="text-white font-semibold">{messageTime}</span>
                   </div>
                 </div>
               </div>

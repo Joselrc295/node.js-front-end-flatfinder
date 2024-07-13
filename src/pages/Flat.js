@@ -4,7 +4,7 @@ import FlatForm from "../components/FlatForm";
 import Messages from "../components/Messages";
 import { getUserLogged } from "../services/users";
 import { useEffect } from "react";
-import { Box, Container, Grid, Typography } from '@mui/material';
+import { Box, Container, Grid } from '@mui/material';
 
 
 
@@ -28,16 +28,6 @@ return (
     <Header />
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <Typography variant="h4" component="h1" gutterBottom sx={{ 
-            fontWeight: 'bold', 
-            color: '#1a237e',
-            textAlign: 'center',
-            mb: 3
-          }}>
-            View Flat
-          </Typography>
-        </Grid>
         <Grid item xs={12} md={6}>
           <Box sx={{ 
             backgroundColor: 'white', 

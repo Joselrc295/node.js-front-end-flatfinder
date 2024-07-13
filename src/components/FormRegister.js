@@ -15,10 +15,10 @@ import Select from "@mui/material/Select";
 import { InputAdornment, IconButton } from "@mui/material";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
-import { doc, updateDoc, addDoc, getDoc, collection } from "firebase/firestore";
+import { doc, collection } from "firebase/firestore";
 import { db } from "../Firebase";
 import Api from "../services/api";
-import { isValidDateValue } from "@testing-library/user-event/dist/utils";
+
 
 export default function FormRegister({ type, onSuccessRedirect, userId }) {
   console.log(type, userId);
