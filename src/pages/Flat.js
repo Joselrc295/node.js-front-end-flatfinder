@@ -29,18 +29,18 @@ return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
-          <Box sx={{ 
+          <Box className="lg:pt-32" sx={{ 
             backgroundColor: 'white', 
             borderRadius: 2, 
             boxShadow: 3, 
             p: 3,
             height: '100%'
           }}>
-            <FlatForm type={'view'} id={id} />
+            <FlatForm  type={'view'} id={id} />
           </Box>
         </Grid>
         <Grid item xs={12} md={6}>
-          <Box sx={{ 
+          <Box  sx={{ 
             backgroundColor: 'white', 
             borderRadius: 2, 
             boxShadow: 3, 

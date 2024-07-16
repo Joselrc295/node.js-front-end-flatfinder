@@ -4,9 +4,10 @@ import { db } from "../Firebase";
 import { Box, Button, TextField } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
 import Api from "../services/api";
-import whatsapp from "../Imagenes/1_qR2E0Ic0gtspweMcUr6WWw_batcheditor_fotor.jpg"
+import whatsapp from "../Imagenes/1659719353_1-kartinkin-net-p-zastavka-dlya-messendzhera-krasivo-1.jpg"
+import iconMessenger from "../Imagenes/32196425-b3e7e484-bdd1-11e7-92ef-b65c5eb8b307.png"
 
-export default function Messages({ flatId }) {
+export default function Messages({ flatId }) {  
   const ref = doc(db, "flats", flatId);
   // const refMessages = collection(db, "messages");
   const api = new Api();
@@ -104,7 +105,9 @@ export default function Messages({ flatId }) {
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="w-full max-w-4xl h-[80vh] p-4 bg-white bg-opacity-90 rounded-lg flex flex-col">
-        <h1 className="text-center text-2xl font-bold mb-4 text-gray-800">Messenger</h1>
+      <div className="flex justify-center items-center mb-4">
+          <img src={iconMessenger} alt="Messenger" className="h-16" />
+        </div>
         <div
           className="flex-grow overflow-auto p-4  rounded-lg mb-4"
           ref={messagesContainerRef}
@@ -128,7 +131,7 @@ export default function Messages({ flatId }) {
                   <div className={`
                     rounded-lg p-3 
                     ${isCurrentUser
-                      ? 'bg-[#DCF8C6] text-black rounded-tr-none shadow-md'
+                      ? 'bg-[#5e98ee] text-black rounded-tr-none shadow-md'
                       : 'bg-white text-black rounded-tl-none shadow-md'
                     }
                     relative
@@ -137,7 +140,7 @@ export default function Messages({ flatId }) {
                     <div className={`
                       absolute w-4 h-4 
                       ${isCurrentUser
-                        ? 'right-0 -mr-2 top-0 bg-[#DCF8C6] shadow-md'
+                        ? 'right-0 -mr-2 top-0 bg-[#5e98ee] shadow-md'
                         : 'left-0 -ml-2 top-0 bg-white shadow-md'
                       }
                       transform rotate-45
@@ -176,7 +179,7 @@ export default function Messages({ flatId }) {
           {flat.user !== userId ? (
             <Button
               type="submit"
-              className="bg-[#128C7E] hover:bg-[#075E54] text-white font-bold py-2 px-4 rounded-full transition duration-200 ease-in-out"
+              className="bg-[#1c1b2e] hover:bg-[#070b2f] text-white font-bold py-2 px-4 rounded-full transition duration-200 ease-in-out"
               variant="contained"
               endIcon={<SendIcon />}
             >
@@ -185,7 +188,7 @@ export default function Messages({ flatId }) {
           ) : (
             <Button
               onClick={handleResponseSubmit}
-              className="bg-[#128C7E] hover:bg-[#075E54] text-white font-bold py-2 px-4 rounded-full transition duration-200 ease-in-out"
+              className="bg-[#1c1b2e] hover:bg-[#070b2f] text-white font-bold py-2 px-4 rounded-full transition duration-200 ease-in-out"
               variant="contained"
               endIcon={<SendIcon />}
             >

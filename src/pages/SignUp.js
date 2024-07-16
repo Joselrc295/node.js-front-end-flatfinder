@@ -51,7 +51,7 @@ export default function SignUp() {
         <Box
          className="bg-transparent flex flex-col items-center mt-2 p-4 rounded-md  text-black shadow-sm"
         >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+          <Avatar sx={{ m: 1 }} className="bg-blue-500">
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">

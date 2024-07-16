@@ -53,7 +53,7 @@ return (
             alignItems: 'center',
         }}
         >   
-        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+        <Avatar sx={{ m: 1 }} className="bg-blue-500">
             <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
