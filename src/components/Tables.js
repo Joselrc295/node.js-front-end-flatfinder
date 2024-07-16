@@ -341,8 +341,8 @@ const TableFlats = ({ type ,  user}) => {
               <StyledTableCell align="center">Year Built</StyledTableCell>
               <StyledTableCell style={{ cursor: "pointer" }} onClick={()=>handleSort('rentPrice')} align="center">&lt;Rent Price&gt;</StyledTableCell>
               <StyledTableCell align="center">Date Available</StyledTableCell>
-              {type==="favorite-flats" && type ==="my-flats" && type !=="favorite-flats" ?(<StyledTableCell align="center">View</StyledTableCell>):(<StyledTableCell align="center">Favorites</StyledTableCell>) }
-              {type==="favorite-flats"&& type ==="my-flats" && type !=="favorite-flats"?(<StyledTableCell align="center">Edit</StyledTableCell>):(<StyledTableCell align="center">View</StyledTableCell>) }
+              {type==="favorite-flats" || type ==="all-flats" ?(<StyledTableCell align="center">Add Favorite</StyledTableCell>):(<StyledTableCell align="center">View</StyledTableCell>) }
+              {type==="favorite-flats" || type ==="all-flats" ?(<StyledTableCell align="center">View</StyledTableCell>):(<StyledTableCell align="center">Edit</StyledTableCell>) }
               {type === 'my-flats' && <StyledTableCell align="center">Delete</StyledTableCell> }
               {type === 'all-flats' && user.role === 'admin' &&  <StyledTableCell align="center">Delete</StyledTableCell>}
             </TableRow>
@@ -364,7 +364,7 @@ const TableFlats = ({ type ,  user}) => {
                 <StyledTableCell component="th" scope="row">
                 {row.flatCreatorEmail}
                 </StyledTableCell>
-                <StyledTableCell  className="truncate max-w-xs" component="th" scope="row">
+                <StyledTableCell align="center"  className="truncate max-w-xs" component="th" scope="row">
                   {row.city}
                 </StyledTableCell>
                 <StyledTableCell align="center">
@@ -437,6 +437,7 @@ const TableFlats = ({ type ,  user}) => {
           </TableBody>
         </Table>
       </TableContainer>
+      {type === 'all-flats' &&
       <Box>
       <Button
           onClick={() => handlePageChange(currentPage - 1)}
@@ -453,6 +454,7 @@ const TableFlats = ({ type ,  user}) => {
         </Button>
  
       </Box>
+}
       </div>
       )}
     </>

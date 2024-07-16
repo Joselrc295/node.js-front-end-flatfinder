@@ -52,50 +52,43 @@ export default function FlatForm({ type, id }) {
     return firstLetter + restOfWord;
   };
 
+  const onlyLetters = () => {
+    if (
+      city.current.value.length < 2 ||
+      streetName.current.value < 2 ||
+      streetName.current.value < 2
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  };
+
+  const forCity = () => {
+    const validate = /^[a-zA-Z\s]+$/; // updated regular expression
+    if (validate.test(city.current.value)) {
+      return true;
+    } else {
+      alert('Please fill correctly the city field, only with letters')
+      return false;
+    }
+  };
+  const forStreet = () => {
+    const validate = /^[a-zA-Z\s]+$/; // updated regular expression
+    if (validate.test(streetName.current.value)) {
+      return true;
+    } else {
+      alert('Please fill correctly the street field, only with letters')
+      return false;
+    }
+  };
+
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const onlyLetters = () => {
-      if (
-        city.current.value.length < 2 ||
-        streetName.current.value < 2 ||
-        streetName.current.value < 2
-      ) {
-        return false;
-      } else {
-        return true;
-      }
-    };
-
-    const forCity = () => {
-      const validate = /^[a-zA-Z\s]+$/; // updated regular expression
-      if (validate.test(city.current.value)) {
-        return true;
-      } else {
-        return false;
-      }
-    };
-    const forStreet = () => {
-      const validate = /^[a-zA-Z\s.,'0-9]+$/; // updated regular expression
-      if (validate.test(streetName.current.value)) {
-        return true;
-      } else {
-        return false;
-      }
-    };
-
-    const onlyNumbers = () => {
-      const validate = /^[0-9]+$/;
-      if (
-        validate.test(areaSize.current.value) &&
-        validate.test(rentPrice.current.value) &&
-        validate.test(yearBuilt.current.value)
-      ) {
-        return true;
-      } else {
-        return false;
-      }
-    };
+    
 
     let flatForSubmit = {
       city: city.current.value.trim(),
@@ -109,17 +102,17 @@ export default function FlatForm({ type, id }) {
 
       user:(localStorage.getItem("user_logged")),
     }   
-    console.log(onlyLetters(),forCity() ,forStreet(), onlyNumbers(),  yearBuilt.current.value);
+    console.log(onlyLetters(),forCity() ,forStreet(),  yearBuilt.current.value);
 
     if (
       onlyLetters() &&
       forCity() &&
       forStreet() &&
-      onlyNumbers() &&
       yearBuilt.current.value < 2024 &&
       yearBuilt.current.value > 1900 &&
       city.current.value &&
       streetName.current.value &&
+      hasAC.current.value && 
       streetNumber.current.value &&
       areaSize.current.value &&
       rentPrice.current.value &&
@@ -137,6 +130,8 @@ export default function FlatForm({ type, id }) {
       }
       if (type === "create") {
         const result = await api.post("flats", flatForSubmit);
+        
+        
       }
       setShowAlert(true);
       setTimeout(() => {
@@ -211,6 +206,7 @@ export default function FlatForm({ type, id }) {
                 variant="outlined"
                 fullWidth
                 onChange={(e) => {
+                  onlyLetters()
                   const inputValue = e.target.value;
                   const capitalized = capitalizeFirstLetter(inputValue);
                   setFlat({ ...flat, city: capitalized });
@@ -227,6 +223,10 @@ export default function FlatForm({ type, id }) {
                 variant="outlined"
                 fullWidth
                 required
+                onChange={()=>{
+                  onlyLetters()
+                  forCity() 
+                  }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
