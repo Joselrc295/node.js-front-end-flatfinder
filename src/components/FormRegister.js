@@ -34,6 +34,7 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
   // const userLogged = (localStorage.getItem("user_logged"));
   const userLoggedData = JSON.parse(localStorage.getItem("user_data_logged"));
   const [birthdayError, setBirthdayError] = useState("");
+  const [avatar, setAvatar] = useState(null);
   let updatedLogged = false;
 
   const showAlertMessage = (severity, message) => {
@@ -137,17 +138,23 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
           return;
         }
     
-        const user = {
-          firstName: firstNameRef.current.value,
-          lastName: lastNameRef.current.value,
-          email: emailRef.current.value,
-          password: passwordRef.current.value,
-          birthday: birthdayRef.current.value,
-          role: roleRef.current.value,
-        };
+        const formData = new FormData();
+        formData.append("firstName", firstNameRef.current.value);
+        formData.append("lastName", lastNameRef.current.value);
+        formData.append("email", emailRef.current.value);
+        formData.append("password", passwordRef.current.value);
+        formData.append("birthday", birthdayRef.current.value);
+        formData.append("role", roleRef.current.value);
+        if (avatar) {
+          formData.append("avatar", avatar);
+        }
     
         try {
-          const result = await api.post("users/register", user);
+          const result = await api.post("users/register", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
           const { message, data, token } = result.data || {};
     
           if (message === "User created successfully" && token) {
@@ -314,6 +321,9 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
       birthday: event.target.value,
     }));
   }
+  const handleAvatarChange = (event) => {
+    setAvatar(event.target.files[0]);
+  };
 
   const validate = (value, type) => {
     if (type === "firstName") {
@@ -535,6 +545,15 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
                     )}
                   </Select>
                 </FormControl>
+              </Grid>
+              <Grid item xs={12}>
+                <input
+                  accept="image/*"
+                  id="avatar"
+                  type="file"
+                  onChange={handleAvatarChange}
+                  disabled={type === "view"}
+                />
               </Grid>
             </Grid>
             {type !== "view" && (
