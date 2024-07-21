@@ -18,7 +18,8 @@ import Visibility from "@mui/icons-material/Visibility";
 import { doc, collection } from "firebase/firestore";
 import { db } from "../Firebase";
 import Api from "../services/api";
-
+import Avatar from "@mui/material/Avatar";
+import PhotoCamera from "@mui/icons-material/PhotoCamera";
 
 export default function FormRegister({ type, onSuccessRedirect, userId }) {
   console.log(type, userId);
@@ -35,6 +36,7 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
   const userLoggedData = JSON.parse(localStorage.getItem("user_data_logged"));
   const [birthdayError, setBirthdayError] = useState("");
   const [avatar, setAvatar] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
   let updatedLogged = false;
 
   const showAlertMessage = (severity, message) => {
@@ -88,130 +90,133 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
     .toISOString()
     .split("T")[0]; // Fecha máxima para tener 120 años
 
-    const handleSubmit = async (event) => {
-      event.preventDefault();
-      console.log("submit");
-    
-      // Validar cada campo individualmente
-      const validations = [
-        validate(firstNameRef.current.value, "firstName"),
-        validate(lastNameRef.current.value, "lastName"),
-        validate(emailRef.current.value, "email"),
-        validate(birthdayRef.current.value, "birthday"),
-      ];
-    
-      if (validations.some((v) => v !== "")) {
-        showAlertMessage("error", "Please fill in all fields correctly.");
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    console.log("submit");
+
+    // Validar cada campo individualmente
+    const validations = [
+      validate(firstNameRef.current.value, "firstName"),
+      validate(lastNameRef.current.value, "lastName"),
+      validate(emailRef.current.value, "email"),
+      validate(birthdayRef.current.value, "birthday"),
+    ];
+
+    if (validations.some((v) => v !== "")) {
+      showAlertMessage("error", "Please fill in all fields correctly.");
+      return;
+    }
+
+    const api = new Api();
+
+    if (type === "create") {
+      if (
+        firstNameRef.current.value.length < 2 ||
+        lastNameRef.current.value.length < 2
+      ) {
+        showAlertMessage("error", "Please more than two letters");
+        setAllFieldsFilled(false);
+        return;
+      } else {
+        setAllFieldsFilled(true);
+      }
+
+      if (
+        !firstNameRef.current.value ||
+        !lastNameRef.current.value ||
+        !emailRef.current.value ||
+        !passwordRef.current.value ||
+        !confirmPassword ||
+        !birthdayRef.current.value ||
+        !roleRef.current.value
+      ) {
+        showAlertMessage("error", "Please fill in all required fields.");
+        setAllFieldsFilled(false);
         return;
       }
-    
-      const api = new Api();
-    
-      if (type === "create") {
-        if (
-          firstNameRef.current.value.length < 2 ||
-          lastNameRef.current.value.length < 2
-        ) {
-          showAlertMessage("error", "Please more than two letters");
-          setAllFieldsFilled(false);
-          return;
+
+      if (passwordRef.current.value !== confirmPassword) {
+        showAlertMessage("error", "The passwords do not match.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("firstName", firstNameRef.current.value);
+      formData.append("lastName", lastNameRef.current.value);
+      formData.append("email", emailRef.current.value);
+      formData.append("password", passwordRef.current.value);
+      formData.append("birthday", birthdayRef.current.value);
+      formData.append("role", roleRef.current.value);
+      if (avatar) {
+        formData.append("avatar", avatar);
+      }
+
+      try {
+        const result = await api.post("users/register", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        const { message, data, token } = result.data || {};
+
+        if (message === "User created successfully" && token) {
+          localStorage.setItem("user_logged", token);
+          localStorage.setItem("user_data_logged", JSON.stringify(data));
+          showAlertMessage("success", "User created successfully.");
+          setTimeout(() => {
+            navigate("/dashboard", { replace: true });
+          }, 2000);
+        }
+      } catch (error) {
+        const errorCode = error?.response?.data?.code;
+        if (errorCode === 11000) {
+          showAlertMessage("error", "The email already exists");
+        }
+      }
+    }
+
+    if (type === "update") {
+      const userUpdate = {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        birthday: user.birthday,
+        role: user.role,
+      };
+
+      try {
+        let result;
+        let message;
+
+        if (userId) {
+          result = await api.patch(
+            `users/update-profile/${userId}`,
+            userUpdate
+          );
         } else {
-          setAllFieldsFilled(true);
+          result = await api.patch(`users/update-profile/`, userUpdate);
+          localStorage.setItem(
+            "user_data_logged",
+            JSON.stringify(result.data.data)
+          );
         }
-    
-        if (
-          !firstNameRef.current.value ||
-          !lastNameRef.current.value ||
-          !emailRef.current.value ||
-          !passwordRef.current.value ||
-          !confirmPassword ||
-          !birthdayRef.current.value ||
-          !roleRef.current.value
-        ) {
-          showAlertMessage("error", "Please fill in all required fields.");
-          setAllFieldsFilled(false);
-          return;
+
+        message = result?.data?.message;
+        if (message === "user updated") {
+          showAlertMessage("success", "Profile updated successfully.");
+          setTimeout(() => {
+            navigate(userId ? "/users" : "/profile", { replace: true });
+          }, 2000);
         }
-    
-        if (passwordRef.current.value !== confirmPassword) {
-          showAlertMessage("error", "The passwords do not match.");
-          return;
-        }
-    
-        const formData = new FormData();
-        formData.append("firstName", firstNameRef.current.value);
-        formData.append("lastName", lastNameRef.current.value);
-        formData.append("email", emailRef.current.value);
-        formData.append("password", passwordRef.current.value);
-        formData.append("birthday", birthdayRef.current.value);
-        formData.append("role", roleRef.current.value);
-        if (avatar) {
-          formData.append("avatar", avatar);
-        }
-    
-        try {
-          const result = await api.post("users/register", formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          });
-          const { message, data, token } = result.data || {};
-    
-          if (message === "User created successfully" && token) {
-            localStorage.setItem("user_logged", token);
-            localStorage.setItem("user_data_logged", JSON.stringify(data));
-            showAlertMessage("success", "User created successfully.");
-            setTimeout(() => {
-              navigate("/dashboard", { replace: true });
-            }, 2000);
-          }
-        } catch (error) {
-          const errorCode = error?.response?.data?.code;
-          if (errorCode === 11000) {
-            showAlertMessage("error", "The email already exists");
-          }
+      } catch (error) {
+        console.error("Error updating user:", error);
+        const errorStatus = error?.response?.data?.status;
+        if (errorStatus === "fail") {
+          showAlertMessage("error", "The email already exists");
         }
       }
-    
-      if (type === "update") {
-        const userUpdate = {
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          birthday: user.birthday,
-          role: user.role,
-        };
-    
-        try {
-          let result;
-          let message;
-    
-          if (userId) {
-            result = await api.patch(`users/update-profile/${userId}`, userUpdate);
-          } else {
-            result = await api.patch(`users/update-profile/`, userUpdate);
-            localStorage.setItem(
-              "user_data_logged",
-              JSON.stringify(result.data.data)
-            );
-          }
-    
-          message = result?.data?.message;
-          if (message === "user updated") {
-            showAlertMessage("success", "Profile updated successfully.");
-            setTimeout(() => {
-              navigate(userId ? "/users" : "/profile", { replace: true });
-            }, 2000);
-          }
-        } catch (error) {
-          console.error("Error updating user:", error);
-          const errorStatus = error?.response?.data?.status;
-          if (errorStatus === "fail") {
-            showAlertMessage("error", "The email already exists");
-          }
-        }
-      }
-    };
+    }
+  };
 
   let nameButton = "Create";
 
@@ -317,12 +322,20 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
   };
   const handleBirthdayChange = (event) => {
     setUser((prevState) => ({
-     ...prevState,
+      ...prevState,
       birthday: event.target.value,
     }));
-  }
+  };
   const handleAvatarChange = (event) => {
-    setAvatar(event.target.files[0]);
+    const file = event.target.files[0];
+    setAvatar(file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setAvatarPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const validate = (value, type) => {
@@ -518,7 +531,7 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
                   id="birthday"
                   onChange={handleBirthdayChange}
                   autoComplete="birthday"
-                  error={birthdayError!== ""}
+                  error={birthdayError !== ""}
                   helperText={birthdayError}
                   inputRef={birthdayRef}
                 />
@@ -540,7 +553,7 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
                   >
                     <MenuItem value={"landlord"}>Landlord</MenuItem>
                     <MenuItem value={"renter"}>Renter</MenuItem>
-                    {( user.role === "admin") && (
+                    {user.role === "admin" && (
                       <MenuItem value={"admin"}>Admin</MenuItem>
                     )}
                   </Select>
@@ -551,9 +564,35 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
                   accept="image/*"
                   id="avatar"
                   type="file"
+                  style={{ display: "none" }}
                   onChange={handleAvatarChange}
                   disabled={type === "view"}
                 />
+                <label htmlFor="avatar">
+                  <Button
+                    variant="contained"
+                    component="span"
+                    className="bg-blue-500 text-white"
+                    startIcon={<PhotoCamera />}
+                    disabled={type === "view"}
+                  >
+                    Upload Avatar
+                  </Button>
+                </label>
+                {avatarPreview && (
+                  <Box
+                    mt={2}
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                  >
+                    <Avatar
+                      src={avatarPreview}
+                      alt="Avatar Preview"
+                      sx={{ width: 80, height: 80 }}
+                    />
+                  </Box>
+                )}
               </Grid>
             </Grid>
             {type !== "view" && (
