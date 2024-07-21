@@ -87,35 +87,26 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
     .toISOString()
     .split("T")[0]; // Fecha máxima para tener 120 años
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    console.log("submit");
-    // Validar cada campo individualmente
-    const firstNameValidation = validate(
-      firstNameRef.current.value,
-      "firstName"
-    );
-    const lastNameValidation = validate(lastNameRef.current.value, "lastName");
-    const emailValidation = validate(emailRef.current.value, "email");
-    const birthdayValidation = validate(birthdayRef.current.value, "birthday");
-    console.log(firstNameValidation);
-    console.log(lastNameValidation);
-    console.log(emailValidation);
-
-    // Verificar si alguna validación falló
-    if (
-      firstNameValidation !== "" ||
-      lastNameValidation !== "" ||
-      emailValidation !== ""||
-      birthdayValidation !== ""
-    ) {
-      // Mostrar la alerta si algún campo no pasa la validación
-      showAlertMessage("error", "Please fill in all fields correctly.");
-      return;
-    }
-
-    if (type === "create") {
-      try {
+    const handleSubmit = async (event) => {
+      event.preventDefault();
+      console.log("submit");
+    
+      // Validar cada campo individualmente
+      const validations = [
+        validate(firstNameRef.current.value, "firstName"),
+        validate(lastNameRef.current.value, "lastName"),
+        validate(emailRef.current.value, "email"),
+        validate(birthdayRef.current.value, "birthday"),
+      ];
+    
+      if (validations.some((v) => v !== "")) {
+        showAlertMessage("error", "Please fill in all fields correctly.");
+        return;
+      }
+    
+      const api = new Api();
+    
+      if (type === "create") {
         if (
           firstNameRef.current.value.length < 2 ||
           lastNameRef.current.value.length < 2
@@ -128,15 +119,14 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
         }
     
         if (
-          firstNameRef.current.value === "" ||
-          lastNameRef.current.value === "" ||
-          emailRef.current.value === "" ||
-          passwordRef.current.value === "" ||
-          confirmPassword === "" ||
-          birthdayRef.current.value === "" ||
-          roleRef.current.value === ""
+          !firstNameRef.current.value ||
+          !lastNameRef.current.value ||
+          !emailRef.current.value ||
+          !passwordRef.current.value ||
+          !confirmPassword ||
+          !birthdayRef.current.value ||
+          !roleRef.current.value
         ) {
-          console.log("estoy aaa");
           showAlertMessage("error", "Please fill in all required fields.");
           setAllFieldsFilled(false);
           return;
@@ -147,7 +137,7 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
           return;
         }
     
-        let user = {
+        const user = {
           firstName: firstNameRef.current.value,
           lastName: lastNameRef.current.value,
           email: emailRef.current.value,
@@ -156,78 +146,65 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
           role: roleRef.current.value,
         };
     
-        user = { ...user, password: passwordRef.current.value };
+        try {
+          const result = await api.post("users/register", user);
+          const { message, data, token } = result.data || {};
     
-        const api = new Api();
-        const result = await api.post("users/register", user);
-        const message = result.data.message;
-        const data = result.data.data;
-        const token = result.data.token;
-    
-        if (message === "User created successfully" && token) {
-          localStorage.setItem("user_logged", token);
-          localStorage.setItem("user_data_logged", JSON.stringify(data));
-          showAlertMessage("success", "User created successfully.");
-          setTimeout(() => {
-            navigate("/dashboard", { replace: true });
-          }, 2000);
-        }
-      } catch (error) {
-        if(error.response.data.code===11000){
-          showAlertMessage("error","The email already exists")
+          if (message === "User created successfully" && token) {
+            localStorage.setItem("user_logged", token);
+            localStorage.setItem("user_data_logged", JSON.stringify(data));
+            showAlertMessage("success", "User created successfully.");
+            setTimeout(() => {
+              navigate("/dashboard", { replace: true });
+            }, 2000);
+          }
+        } catch (error) {
+          const errorCode = error?.response?.data?.code;
+          if (errorCode === 11000) {
+            showAlertMessage("error", "The email already exists");
+          }
         }
       }
-    }
     
-    if (type === "update") {
-      const userUpdate = {
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        birthday: user.birthday,
-        role: user.role,
-      };
-
-      try {
-        const api = new Api();
-        let result = null;
-        let message = null;
-        if (userId) {
-          result = await api.patch(
-            `users/update-profile/${userId}`,
-            userUpdate
-          );
-          message = result.data.message;
+      if (type === "update") {
+        const userUpdate = {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          birthday: user.birthday,
+          role: user.role,
+        };
+    
+        try {
+          let result;
+          let message;
+    
+          if (userId) {
+            result = await api.patch(`users/update-profile/${userId}`, userUpdate);
+          } else {
+            result = await api.patch(`users/update-profile/`, userUpdate);
+            localStorage.setItem(
+              "user_data_logged",
+              JSON.stringify(result.data.data)
+            );
+          }
+    
+          message = result?.data?.message;
           if (message === "user updated") {
             showAlertMessage("success", "Profile updated successfully.");
             setTimeout(() => {
-              navigate("/users", { replace: true });
+              navigate(userId ? "/users" : "/profile", { replace: true });
             }, 2000);
           }
-        } else {
-          result = await api.patch(`users/update-profile/`, userUpdate);
-          console.log(result);
-          localStorage.setItem(
-            "user_data_logged",
-            JSON.stringify(result.data.data)
-          );
-          message = result.data.message;
-          if (message === "user updated") {
-            showAlertMessage("success", "Profile updated successfully.");
-            setTimeout(() => {
-              navigate("/profile", { replace: true });
-            }, 2000);
+        } catch (error) {
+          console.error("Error updating user:", error);
+          const errorStatus = error?.response?.data?.status;
+          if (errorStatus === "fail") {
+            showAlertMessage("error", "The email already exists");
           }
         }
-      } catch (error) {
-        console.error("Error updating user:", error);
-        if(error.response.data.status==="fail"){
-          showAlertMessage("error","The email already exists")
-        }
-
       }
-    }
-  };
+    };
 
   let nameButton = "Create";
 

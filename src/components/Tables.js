@@ -333,13 +333,13 @@ const TableFlats = ({ type ,  user}) => {
             <TableRow>
             <StyledTableCell align="center">Owner</StyledTableCell>
             <StyledTableCell align="center">Email</StyledTableCell>
-              <StyledTableCell style={{ cursor: "pointer" }} onClick={()=>handleSort('city')} align="center"> &lt;City&gt; {orderBy === 'city' && (order === 1 ? '▲' : '▼')}</StyledTableCell>
+              <StyledTableCell style={{ cursor: "pointer" }} onClick={()=>handleSort('city')} align="center">  City {orderBy === 'city' && (order === 1 ? '▲' : '▼')}</StyledTableCell>
               <StyledTableCell align="center">Street</StyledTableCell>
               <StyledTableCell align="center">Street Number</StyledTableCell>
-              <StyledTableCell style={{ cursor: "pointer" }} onClick={()=>handleSort('areaSize')} align="center">&lt;Area Size&gt;</StyledTableCell>
+              <StyledTableCell style={{ cursor: "pointer" }} onClick={()=>handleSort('areaSize')} align="center">   Area Size</StyledTableCell>
               <StyledTableCell align="center">Has AC</StyledTableCell>
               <StyledTableCell align="center">Year Built</StyledTableCell>
-              <StyledTableCell style={{ cursor: "pointer" }} onClick={()=>handleSort('rentPrice')} align="center">&lt;Rent Price&gt;</StyledTableCell>
+              <StyledTableCell style={{ cursor: "pointer" }} onClick={()=>handleSort('rentPrice')} align="center">   Rent Price  </StyledTableCell>
               <StyledTableCell align="center">Date Available</StyledTableCell>
               {type==="favorite-flats" || type ==="all-flats" ?(<StyledTableCell align="center">Add Favorite</StyledTableCell>):(<StyledTableCell align="center">View</StyledTableCell>) }
               {type==="favorite-flats" || type ==="all-flats" ?(<StyledTableCell align="center">View</StyledTableCell>):(<StyledTableCell align="center">Edit</StyledTableCell>) }
@@ -375,7 +375,7 @@ const TableFlats = ({ type ,  user}) => {
                 </StyledTableCell>
                 <StyledTableCell align="center">{row.areaSize}</StyledTableCell>
                 <StyledTableCell align="center">
-                  {row.hasAC ? "Yes" : "No"}
+                  {row.hasAc ? "Yes" : "No"}
                 </StyledTableCell>
                 <StyledTableCell align="center">
                   {row.yearBuilt}

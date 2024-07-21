@@ -1,22 +1,22 @@
-import Box from "@mui/material/Box";
-import { Button, Switch, TextField, Typography } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Box,
+  Button,
+  Switch,
+  TextField,
+  Typography,
+  Alert,
+  Grid,
+  FormControlLabel,
+  CircularProgress
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import Alert from "@mui/material/Alert";
 import Api from "../services/api";
-import { Grid, FormControlLabel, CircularProgress } from "@mui/material";
 
 export default function FlatForm({ type, id }) {
-  // const [alertSeverity, setAlertSeverity] = useState(null);
-  // const [alertMessage, setAlertMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
-  // const showAlertMessage = (severity, message) => {
-  //   setAlertSeverity(severity);
-  //   setAlertMessage(message);
-  //   setShowAlert(true);
-  // };
-  const api = new Api();
-  console.log(id);
+  const [alertSeverity, setAlertSeverity] = useState(null);
+  const [alertMessage, setAlertMessage] = useState("");
   const [flatLoaded, setFlatLoaded] = useState(false);
   const currentDate = new Date().toJSON().slice(0, 10);
   const [flat, setFlat] = useState({
@@ -31,124 +31,111 @@ export default function FlatForm({ type, id }) {
   });
 
   const navigate = useNavigate();
-  const date = new Date().toJSON().slice(0, 10);
+  const api = new Api();
   const city = useRef("");
   const streetName = useRef("");
   const streetNumber = useRef("");
   const areaSize = useRef("");
-  const hasAC = useRef(false);
+  const hasAc = useRef(false);
   const yearBuilt = useRef("");
   const rentPrice = useRef("");
   const dateAvailable = useRef("");
-  let refFlat = null;
-  const user =(localStorage.getItem("user_logged"));
-  const capitalizeFirstLetter = (word) =>{
-    if (!word){
-      return ''
+  const user = localStorage.getItem("user_logged");
 
+  const showAlertMessage = (severity, message) => {
+    setAlertSeverity(severity);
+    setAlertMessage(message);
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 4000);
+  };
+
+  const capitalizeFirstLetter = (word) => {
+    if (!word) {
+      return "";
     }
     const firstLetter = word.charAt(0).toUpperCase();
     const restOfWord = word.slice(1).toLowerCase();
     return firstLetter + restOfWord;
   };
 
-  const onlyLetters = () => {
-    if (
-      city.current.value.length < 2 ||
-      streetName.current.value < 2 ||
-      streetName.current.value < 2
-    ) {
-      return false;
-    } else {
-      return true;
-    }
-  };
-
-  const forCity = () => {
-    const validate = /^[a-zA-Z\s]+$/; // updated regular expression
-    if (validate.test(city.current.value)) {
-      return true;
-    } else {
-      alert('Please fill correctly the city field, only with letters')
+  const validateCity = () => {
+    const validate = /^[a-zA-Z\s]+$/;
+    if (city.current.value.length < 2 || !validate.test(city.current.value)) {
+      showAlertMessage("error", "Please fill correctly the city field, only with letters");
       return false;
     }
+    return true;
   };
-  const forStreet = () => {
-    const validate = /^[a-zA-Z\s]+$/; // updated regular expression
-    if (validate.test(streetName.current.value)) {
-      return true;
-    } else {
-      alert('Please fill correctly the street field, only with letters')
+
+  const validateStreet = () => {
+    const validate = /^[a-zA-Z0-9\s]+$/; 
+    if (streetName.current.value.length < 2 || !validate.test(streetName.current.value)) {
+      showAlertMessage("error", "Please fill correctly the street field, only with letters and numbers");
       return false;
     }
+    return true;
+};
+
+  const validateForm = () => {
+    if (!validateCity()) return false;
+    if (!validateStreet()) return false;
+    if (yearBuilt.current.value >= 2024 || yearBuilt.current.value <= 1900) {
+      showAlertMessage("error", "Please enter a valid year built (between 1900 and 2023)");
+      return false;
+    }
+    if (!city.current.value || !streetName.current.value || !streetNumber.current.value || !areaSize.current.value || !rentPrice.current.value || !dateAvailable.current.value) {
+      showAlertMessage("error", "All fields must be filled out correctly");
+      return false;
+    }
+    return true;
   };
-
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    
+    if (!validateForm()) {
+      return;
+    }
 
     let flatForSubmit = {
       city: city.current.value.trim(),
       streetName: streetName.current.value,
       streetNumber: streetNumber.current.value,
       areaSize: parseInt(areaSize.current.value),
-      hasAC: hasAC.current.checked,
+      hasAc: hasAc.current.checked,
       yearBuilt: yearBuilt.current.value,
       rentPrice: parseInt(rentPrice.current.value),
       dateAvailable: dateAvailable.current.value,
+      user,
+    };
 
-      user:(localStorage.getItem("user_logged")),
-    }   
-    console.log(onlyLetters(),forCity() ,forStreet(),  yearBuilt.current.value);
-
-    if (
-      onlyLetters() &&
-      forCity() &&
-      forStreet() &&
-      yearBuilt.current.value < 2024 &&
-      yearBuilt.current.value > 1900 &&
-      city.current.value &&
-      streetName.current.value &&
-      hasAC.current.value && 
-      streetNumber.current.value &&
-      areaSize.current.value &&
-      rentPrice.current.value &&
-      dateAvailable.current.value
-    ) {
+    try {
       if (type === "update") {
-        const result = await api.patch(`flats/${id}`, flatForSubmit);
-        /*  if (message ==='Success') {
-            showAlertMessage("success", "Flat updated successfully.");
-            setTimeout(() => {
-              navigate("/my-flats", { replace: true });
-            }, 2000);
-          }*/
-
+        await api.patch(`flats/${id}`, flatForSubmit);
+        showAlertMessage("success", "Flat updated successfully.");
+      } else if (type === "create") {
+        await api.post("flats", flatForSubmit);
+        showAlertMessage("success", "Flat created successfully.");
       }
-      if (type === "create") {
-        const result = await api.post("flats", flatForSubmit);
-        
-        
-      }
-      setShowAlert(true);
       setTimeout(() => {
-        navigate("/my-flats", { replace: false });
+        navigate("/my-flats", { replace: true });
       }, 2000);
-    } else {
-      alert("You need to fill correctly the information");
+    } catch (error) {
+      showAlertMessage("error", "An error occurred while submitting the flat.");
     }
   };
-  const getFlatData = async () => {
 
-  let responseFlat = []
-  const result = await api.get(`flats/${id}`)
-  responseFlat = result.data.data
-  setFlat(responseFlat);
-  setFlatLoaded(true);
-};
+  const getFlatData = async () => {
+    try {
+      const result = await api.get(`flats/${id}`);
+      setFlat(result.data.data);
+      setFlatLoaded(true);
+    } catch (error) {
+      showAlertMessage("error", "Failed to load flat data.");
+    }
+  };
 
   const processData = async () => {
     if (type === "update" || type === "view") {
@@ -192,8 +179,8 @@ export default function FlatForm({ type, id }) {
             </Typography>
           )}
           {showAlert && (
-            <Alert severity="success" sx={{ marginBottom: "24px" }}>
-              You have created a new flat.
+            <Alert severity={alertSeverity} sx={{ marginBottom: "24px" }}>
+              {alertMessage}
             </Alert>
           )}
           <Grid container spacing={3}>
@@ -206,7 +193,6 @@ export default function FlatForm({ type, id }) {
                 variant="outlined"
                 fullWidth
                 onChange={(e) => {
-                  onlyLetters()
                   const inputValue = e.target.value;
                   const capitalized = capitalizeFirstLetter(inputValue);
                   setFlat({ ...flat, city: capitalized });
@@ -223,10 +209,6 @@ export default function FlatForm({ type, id }) {
                 variant="outlined"
                 fullWidth
                 required
-                onChange={()=>{
-                  onlyLetters()
-                  forCity() 
-                  }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -258,7 +240,7 @@ export default function FlatForm({ type, id }) {
                   <Switch
                     disabled={type === "view"}
                     defaultChecked={flat.hasAc}
-                    inputRef={hasAC}
+                    inputRef={hasAc}
                   />
                 }
                 label="Has AC"
@@ -291,7 +273,10 @@ export default function FlatForm({ type, id }) {
             <Grid item xs={12} sm={6}>
               <TextField
                 disabled={type === "view"}
-                defaultValue={flat.dateAvailable}
+                defaultValue={flat.dateAvailable
+                  ? new Date(flat.dateAvailable).toISOString().slice(0, 10)
+                  : ""}
+                
                 type="date"
                 label="Date available"
                 inputRef={dateAvailable}
