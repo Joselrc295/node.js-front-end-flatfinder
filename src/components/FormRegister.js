@@ -572,7 +572,7 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
                   <Button
                     variant="contained"
                     component="span"
-                    className="bg-blue-500 text-white"
+                    className= "text-white"
                     startIcon={<PhotoCamera />}
                     disabled={type === "view"}
                   >
