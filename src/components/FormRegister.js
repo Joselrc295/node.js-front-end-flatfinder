@@ -31,12 +31,11 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
   const [alertSeverity, setAlertSeverity] = useState(null);
   const [alertMessage, setAlertMessage] = useState("");
   const [showAlert, setShowAlert] = useState(false);
-  const [allFieldsFilled, setAllFieldsFilled] = useState(true); // Estado para controlar si todos los campos están llenos
-  // const userLogged = (localStorage.getItem("user_logged"));
-  const userLoggedData = JSON.parse(localStorage.getItem("user_data_logged"));
+  const [allFieldsFilled, setAllFieldsFilled] = useState(true);
   const [birthdayError, setBirthdayError] = useState("");
   const [avatar, setAvatar] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
+  
   let updatedLogged = false;
 
   const showAlertMessage = (severity, message) => {
@@ -175,47 +174,67 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
       }
     }
 
-    if (type === "update") {
-      const userUpdate = {
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        birthday: user.birthday,
-        role: user.role,
-      };
+   if (type === "update") {
+  const userUpdate = {
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    birthday: user.birthday,
+    role: user.role,
+  };
 
-      try {
-        let result;
-        let message;
+  const formData = new FormData();
+  formData.append("firstName", user.firstName);
+  formData.append("lastName", user.lastName);
+  formData.append("email", user.email);
+  formData.append("birthday", user.birthday);
+  formData.append("role", user.role);
+  if (avatar) {
+    formData.append("avatar", avatar);
+  }
 
-        if (userId) {
-          result = await api.patch(
-            `users/update-profile/${userId}`,
-            userUpdate
-          );
-        } else {
-          result = await api.patch(`users/update-profile/`, userUpdate);
-          localStorage.setItem(
-            "user_data_logged",
-            JSON.stringify(result.data.data)
-          );
-        }
+  try {
+    let result;
+    let message;
 
-        message = result?.data?.message;
-        if (message === "user updated") {
-          showAlertMessage("success", "Profile updated successfully.");
-          setTimeout(() => {
-            navigate(userId ? "/users" : "/profile", { replace: true });
-          }, 2000);
+    if (userId) {
+      result = await api.patch(
+        `users/update-profile/${userId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
-      } catch (error) {
-        console.error("Error updating user:", error);
-        const errorStatus = error?.response?.data?.status;
-        if (errorStatus === "fail") {
-          showAlertMessage("error", "The email already exists");
-        }
-      }
+      );
+    } else {
+      result = await api.patch(`users/update-profile/`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      localStorage.setItem(
+        "user_data_logged",
+        JSON.stringify(result.data.data)
+      );
     }
+
+    message = result?.data?.message;
+    if (message === "user updated") {
+      showAlertMessage("success", "Profile updated successfully.");
+      setTimeout(() => {
+        navigate(userId ? "/users" : "/profile", { replace: true });
+      }, 2000);
+    }
+  } catch (error) {
+    console.error("Error updating user:", error);
+    const errorStatus = error?.response?.data?.status;
+    if (errorStatus === "fail") {
+      showAlertMessage("error", "The email already exists");
+    }
+  }
+}
+
   };
 
   let nameButton = "Create";
@@ -236,6 +255,7 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
       if (userLoggedData) {
         setUser(userLoggedData);
         setUserLoaded(true);
+        setAvatarPreview(`http://localhost:3001${userLoggedData.avatar.replace(/\\/g, '/')}`); // Mostrar la imagen del avatar existente
       } else {
         console.log(
           "No hay datos de usuario logueado en el almacenamiento local"
@@ -249,6 +269,7 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
           const result = JSON.parse(localStorage.getItem("user_data_logged"));
           setUser(result);
           setUserLoaded(true);
+          setAvatarPreview(`http://localhost:3001${result.avatar.replace(/\\/g, '/')}`); // Mostrar la imagen del avatar existente
         } else {
           const result = await api.get(`users/${userId}`);
           console.log("estoy aqui", result);
@@ -258,6 +279,7 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
           if (message === "success") {
             setUser(dataUser);
             setUserLoaded(true);
+            setAvatarPreview(`http://localhost:3001${dataUser.avatar.replace(/\\/g, '/')}`); // Mostrar la imagen del avatar existente
           } else {
             console.log("No se pudieron obtener los datos del usuario");
           }
@@ -514,7 +536,6 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
                 </Grid>
               )}
               <Grid item xs={12}>
-                {/* <p className="text-blue-500">Birthday</p> */}
                 <TextField
                   required
                   fullWidth
@@ -544,9 +565,7 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
                     disabled={type === "view"}
                     labelId="role"
                     id="role"
-                    // value={userType}
                     label="role"
-                    // onChange={handleChange}
                     inputRef={roleRef}
                     value={user.role}
                     onChange={(e) => setUser({ ...user, role: e.target.value })}
@@ -576,7 +595,7 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
                     startIcon={<PhotoCamera />}
                     disabled={type === "view"}
                   >
-                    Upload Avatar
+                    {type === "update" ? "Update Avatar" : "Upload Avatar"}
                   </Button>
                 </label>
                 {avatarPreview && (
