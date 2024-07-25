@@ -53,6 +53,12 @@ export default function MenuTransitions({ user, setUser }) {
       if (menuItem === "AddANewFlat") {
         navigate("/add-new-flat");
       }
+      if (menuItem === "Log out") {
+        localStorage.removeItem("user_logged");
+        localStorage.removeItem("user_data_logged");
+        setUser(null);
+        navigate("/", { replace: true });
+      }
     };
   };
 
