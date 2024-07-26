@@ -414,7 +414,7 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
           padding: 4, // Agregar padding si es necesario
           borderRadius: 1,
         }}
-        className="backdrop-blur-sm bg-white/30 rounded-lg"
+        className="backdrop-blur-sm bg-white/45 rounded-lg"
       >
         {showAlert && (
           <Stack sx={{ width: "100%" }} spacing={2} mb={2}>

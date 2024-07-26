@@ -13,6 +13,7 @@ import ResponsiveAppBar from '../components/Header'
 import { useParams } from 'react-router-dom';
 import { getUserLogged } from "../services/users";
 import { useEffect } from "react";
+import flatsImage from "../Imagenes/flats2.jpeg"
 
 const defaultTheme = createTheme();
 
@@ -40,8 +41,19 @@ export default function Profile() {
 
 
 return (
-   <>
-   <ResponsiveAppBar/>
+   <div>
+     <ResponsiveAppBar/>
+    <div
+    style={{
+    backgroundImage: `url(${flatsImage})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    minHeight: '100vh',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }}
+    >
     <ThemeProvider theme={defaultTheme}>
     <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -53,7 +65,7 @@ return (
             alignItems: 'center',
         }}
         >   
-        <Avatar sx={{ m: 1 }} className="bg-blue-500">
+        <Avatar sx={{ m: 1 }} className="bg-gradient-to-r from-[#1f0e42] to-[#7946d0]">
             <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
@@ -61,11 +73,12 @@ return (
         </Typography>
         <FormRegister type={'view'} userId={userId}/>
         <br></br>
-        <Button onClick={handleUpdateProfile} variant="contained">Update Profile</Button>
+        <Button className="bg-gradient-to-r from-[#1f0e42] to-[#7946d0]" onClick={handleUpdateProfile} variant="contained">Update Profile</Button>
         </Box>
         
     </Container>
     </ThemeProvider>
-   </>
+   </div>
+   </div>
 );
 }
