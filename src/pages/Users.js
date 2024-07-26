@@ -1,10 +1,14 @@
 import Header from "../components/Header";
-import UsersTable from "../components/UsersTable";
+import UsersCards from "../components/UsersCards";
 import { getUserLogged } from "../services/users";
 import { useEffect } from "react";
-
+import { Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import flatsImage from "../Imagenes/flats2.jpeg"
+import UsersTable from "../components/UsersTable";
 
 export default function Users() {
+  const navigate = useNavigate();
     useEffect(() => {
         const checkUserLogged = async () => {
           const userLogged = await getUserLogged();
@@ -14,11 +18,35 @@ export default function Users() {
         };
         checkUserLogged();
       }, []);
-    return (
+      return (
         <div>
-            <Header/>
-           
-            <UsersTable/>
+          <div style={{ position: "relative", zIndex: 1301 }}>
+            <Header />
+          </div>
+          <div
+            style={{
+              backgroundImage: `url(${flatsImage})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              minHeight: "100vh",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "flex-start",
+              paddingTop: "20px",
+              zIndex: -2,
+            }}
+          >
+            <div className="flex justify-center my-4">
+              <button className="button" onClick={() => navigate("/Users2")}>
+                View Users as Cards
+                <div className="hoverEffect">
+                  <div></div>
+                </div>
+              </button>
+            </div>
+            <UsersTable />
+          </div>
         </div>
-    );
+      );
 }

@@ -27,7 +27,7 @@ export default function Header() {
 
   return (
     <div>
-      <AppBar position="sticky" className="bg-white shadow-md">
+      <AppBar position="sticky" className="bg-white shadow-md" >
         <Toolbar className="flex justify-between items-center p-4">
           <div className="flex items-center space-x-3">
             <Link to="/dashboard">

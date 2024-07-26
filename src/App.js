@@ -14,6 +14,7 @@ import FlatEdit from "./pages/FlatEdit";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Guardian from "./Guardian/Guardian";
+import Users2 from "./pages/Users2"
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
           <Route path={"/flat/:id"} element={<Flat />} />
           <Route path={"/flat/edit/:id"} element={<FlatEdit />} />
           <Route path={"/add-new-flat"} element={<NewFlat />} />
+          <Route path={"/Users2"} element={<Users2 />} />
         </Routes>
       </Guardian>
      }>

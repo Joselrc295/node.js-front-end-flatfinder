@@ -223,7 +223,7 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
     if (message === "user updated") {
       showAlertMessage("success", "Profile updated successfully.");
       setTimeout(() => {
-        navigate(userId ? "/users" : "/profile", { replace: true });
+        navigate(userId ? "/Users2" : "/profile", { replace: true });
       }, 2000);
     }
   } catch (error) {

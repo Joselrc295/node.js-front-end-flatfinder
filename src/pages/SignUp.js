@@ -43,7 +43,7 @@ export default function SignUp() {
     minHeight: '100vh',
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   }}>
      <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">

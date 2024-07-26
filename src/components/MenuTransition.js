@@ -42,7 +42,7 @@ export default function MenuTransitions({ user, setUser }) {
         navigate("/dashboard");
       }
       if (menuItem === "Users") {
-        navigate("/users");
+        navigate("/Users2");
       }
       if (menuItem === "MyFlats") {
         navigate("/my-flats");
@@ -96,7 +96,7 @@ export default function MenuTransitions({ user, setUser }) {
           </svg>
         </div>
       </MenuButton>
-      <Menu slots={{ listbox: AnimatedListbox }}>
+      <Menu slots={{ listbox: AnimatedListbox }} style={{ zIndex: 1301 }}>
         <MenuItem onClick={createHandleMenuClick("Home")}>
           <HomeIcon className="mr-2" /> Home
         </MenuItem>
@@ -132,17 +132,30 @@ export default function MenuTransitions({ user, setUser }) {
   );
 }
 
+const purple = {
+  50: "#F3E5F5",
+  100: "#E1BEE7",
+  200: "#CE93D8",
+  300: "#BA68C8",
+  400: "#AB47BC",
+  500: "#9C27B0",
+  600: "#8E24AA",
+  700: "#7B1FA2",
+  800: "#6A1B9A",
+  900: "#4A148C",
+};
+
 const blue = {
-  50: "#F0F7FF",
-  100: "#C2E0FF",
-  200: "#99CCF3",
-  300: "#66B2FF",
-  400: "#3399FF",
-  500: "#007FFF",
-  600: "#0072E6",
-  700: "#0059B3",
-  800: "#004C99",
-  900: "#003A75",
+  50: "#E3F2FD",
+  100: "#BBDEFB",
+  200: "#90CAF9",
+  300: "#64B5F6",
+  400: "#42A5F5",
+  500: "#2196F3",
+  600: "#1E88E5",
+  700: "#1976D2",
+  800: "#1565C0",
+  900: "#0D47A1",
 };
 
 const grey = {
@@ -175,7 +188,7 @@ const Listbox = styled("ul")(
   box-shadow: 0px 4px 30px ${
     theme.palette.mode === "dark" ? grey[900] : grey[200]
   };
-  z-index: 1;
+  z-index: 1301;
 
   .closed & {
     opacity: 0;
@@ -249,8 +262,8 @@ const MenuItem = styled(BaseMenuItem)(
   }
 
   &:hover:not(.${menuItemClasses.disabled}) {
-    background-color: ${theme.palette.mode === "dark" ? blue[900] : blue[50]};
-    color: ${theme.palette.mode === "dark" ? blue[100] : blue[900]};
+    background-color: ${theme.palette.mode === "dark" ? purple[600] : purple[50]};
+    color: ${theme.palette.mode === "dark" ? purple[100] : purple[900]};
   }
   `
 );
