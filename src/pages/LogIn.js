@@ -126,7 +126,7 @@ export default function LogIn() {
               borderRadius: 1,
             }}
           >
-            <Avatar sx={{ m: 1 }} className="bg-blue-500">
+            <Avatar sx={{ m: 1 }} className="bg-gradient-to-r from-[#1f0e42] to-[#7946d0]">
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
@@ -185,6 +185,7 @@ export default function LogIn() {
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
                 disabled={isProgress}
+                className="bg-gradient-to-r from-[#1f0e42] to-[#7946d0]"
               >
                 Log In
               </Button>

@@ -51,10 +51,10 @@ export default function SignUp() {
         <Box
          className="bg-transparent flex flex-col items-center mt-2 p-4 rounded-md  text-black shadow-sm"
         >
-          <Avatar sx={{ m: 1 }} className="bg-blue-500">
+          <Avatar sx={{ m: 1 }} className="bg-gradient-to-r from-[#1f0e42] to-[#7946d0]">
             <LockOutlinedIcon />
           </Avatar>
-          <Typography component="h1" variant="h5">
+          <Typography component="h1" variant="h5" className="bg-gradient-to-r from-[#1f0e42] to-[#7946d0] text-transparent bg-clip-text">
             Sign up
           </Typography>
           <FormRegister
