@@ -20,9 +20,7 @@ export default function Users() {
       }, []);
       return (
         <div>
-          <div style={{ position: "relative", zIndex: 1301 }}>
-            <Header />
-          </div>
+         
           <div
             style={{
               backgroundImage: `url(${flatsImage})`,
@@ -33,10 +31,12 @@ export default function Users() {
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "flex-start",
-              paddingTop: "20px",
               zIndex: -2,
             }}
           >
+             <div style={{ position: "relative", zIndex: 1301, alignSelf: "stretch" }}>
+            <Header />
+          </div>
             <div className="flex justify-center my-4">
               <button className="button" onClick={() => navigate("/Users2")}>
                 View Users as Cards

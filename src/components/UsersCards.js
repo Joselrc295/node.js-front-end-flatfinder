@@ -3,7 +3,6 @@ import { Box } from "@mui/system";
 import TextField from "@mui/material/TextField";
 import { Slider, Typography } from "@mui/material";
 import { useEffect, useState, useRef } from "react";
-import Button from "@mui/material/Button";
 import Api from "../services/api";
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
@@ -90,10 +89,6 @@ export default function UsersCards() {
     }
   };
 
-  const handleSort = (column) => {
-    setOrderBy(column);
-    setOrder(order === 1 ? -1 : 1);
-  };
 
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -105,13 +100,7 @@ export default function UsersCards() {
 
   const [dropdownOpen, setDropdownOpen] = useState(null);
 
-  const toggleDropdown = (index) => {
-    if (dropdownOpen === index) {
-      setDropdownOpen(null);
-    } else {
-      setDropdownOpen(index);
-    }
-  };
+ 
 
   const handleClickOutside = (event) => {
     if (
@@ -149,7 +138,7 @@ export default function UsersCards() {
           display="flex"
           alignItems="center"
           justifyContent="space-between"
-          className=" shadow-lg w-full max-w-5xl backdrop-blur-sm bg-white/30 rounded-lg p-7"
+         className="shadow-lg w-full max-w-5xl backdrop-blur-sm bg-white/30 rounded-lg p-7"
         
           component={"form"}
           sx={{
@@ -190,6 +179,7 @@ export default function UsersCards() {
             value={flatsCounter}
             onChange={(e) => setFlatsCounter(e.target.value)}
             className="mx-2 w-1/4"
+          
           >
             <option key={"none"} value={""}></option>
             <option key={"0-5"} value={"0-5"}>
@@ -226,6 +216,7 @@ export default function UsersCards() {
               getAriaLabel={() => "Age Range"}
               valueLabelDisplay="auto"
               className="mx-4"
+              color="secondary"
             />
           </div>
         </Box>
