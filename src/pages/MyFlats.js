@@ -4,6 +4,8 @@ import { getUserLogged } from "../services/users";
 import { useEffect } from "react";
 import Button from '@mui/material/Button';
 import { useNavigate } from "react-router-dom";
+import { FlatCards } from "../components/FlatCards";
+import flatsImage from "../Imagenes/flats2.jpeg";
 
 const MyFlats = () =>{
     const navigate = useNavigate();
@@ -25,12 +27,31 @@ const MyFlats = () =>{
     return(
     <>
     <Header/>
-
-    <TableFlats type={'my-flats'}/>
+    <div 
+        style={{
+          backgroundImage: `url(${flatsImage})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "flex-start",
+          paddingTop: "20px",
+          zIndex: -2,
+        }}
+        >
+    <FlatCards type={'my-flats'}/>
     <br></br>
     <br></br>
-   <div className="flex content-center justify-center">
-   <Button onClick={buttonClick} variant="contained" >Add new flat </Button>
+    <div className="flex justify-center my-1">
+            <button className="button" onClick={() => navigate("/add-new-flat")}>
+              Add new Flat
+              <div className="hoverEffect">
+                <div></div>
+              </div>
+            </button>
+          </div>
    </div>
     
     </>)

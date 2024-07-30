@@ -12,6 +12,21 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Api from "../services/api";
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { styled } from '@mui/material/styles';
+
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+});
+
 
 export default function FlatForm({ type, id }) {
   const [showAlert, setShowAlert] = useState(false);
@@ -19,6 +34,7 @@ export default function FlatForm({ type, id }) {
   const [alertMessage, setAlertMessage] = useState("");
   const [flatLoaded, setFlatLoaded] = useState(false);
   const currentDate = new Date().toJSON().slice(0, 10);
+  const [selectedFile, setSelectedFile] = useState(null);
   const [flat, setFlat] = useState({
     city: "",
     streetName: "",
@@ -99,24 +115,25 @@ export default function FlatForm({ type, id }) {
       return;
     }
 
-    let flatForSubmit = {
-      city: city.current.value.trim(),
-      streetName: streetName.current.value,
-      streetNumber: streetNumber.current.value,
-      areaSize: parseInt(areaSize.current.value),
-      hasAc: hasAc.current.checked,
-      yearBuilt: yearBuilt.current.value,
-      rentPrice: parseInt(rentPrice.current.value),
-      dateAvailable: dateAvailable.current.value,
-      user,
-    };
+    let formData  = new FormData()
+      formData.append('city', city.current.value.trim())
+      formData.append('streetName', streetName.current.value)
+      formData.append('streetNumber', streetNumber.current.value)
+      formData.append('areaSize', parseInt(areaSize.current.value))
+      formData.append('hasAc', hasAc.current.checked)
+      formData.append('yearBuilt', yearBuilt.current.value)
+      formData.append('rentPrice', parseInt(rentPrice.current.value))
+      formData.append('dateAvailable', dateAvailable.current.value)
+      formData.append('image', selectedFile)
+    
+    ;
 
     try {
       if (type === "update") {
-        await api.patch(`flats/${id}`, flatForSubmit);
+        await api.patch(`flats/${id}`, formData);
         showAlertMessage("success", "Flat updated successfully.");
       } else if (type === "create") {
-        await api.post("flats", flatForSubmit);
+        await api.post("flats", formData);
         showAlertMessage("success", "Flat created successfully.");
       }
       setTimeout(() => {
@@ -125,6 +142,11 @@ export default function FlatForm({ type, id }) {
     } catch (error) {
       showAlertMessage("error", "An error occurred while submitting the flat.");
     }
+  };
+  
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    setSelectedFile(file)
   };
 
   const getFlatData = async () => {
@@ -178,11 +200,19 @@ export default function FlatForm({ type, id }) {
               Create Your Flat
             </Typography>
           )}
+          {type !== 'create' &&
+              <img className="w-[80%] mb-[2.5%] mx-[10%]" src={
+                flat.image
+                  ? `http://localhost:3001${flat.image.replace(/\\/g, "/")}`
+                  : "/path/to/default-avatar.jpg"
+               }  alt=""/>
+          }
           {showAlert && (
             <Alert severity={alertSeverity} sx={{ marginBottom: "24px" }}>
               {alertMessage}
             </Alert>
           )}
+
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -287,16 +317,32 @@ export default function FlatForm({ type, id }) {
               />
             </Grid>
           </Grid>
+          {type !== "view" && 
+          <Grid  className="mx-[38%] mt-[20px]">
+              <Button
+              
+              color="secondary"
+              component="label"
+              variant="contained"
+              tabIndex={-1}
+              startIcon={<CloudUploadIcon />}
+            >
+              {selectedFile && <p>File selected: {selectedFile.name}</p>}
+              <VisuallyHiddenInput id='image' type="file" accept="image/*" onChange={handleFileChange} />
+            </Button>
+          </Grid>
+          }
           {type !== "view" && (
             <Button
               type="submit"
               variant="contained"
-              color="primary"
+              color="secondary"
               fullWidth
               sx={{ marginTop: "24px" }}
             >
               Submit
             </Button>
+          
           )}
         </>
       ) : (

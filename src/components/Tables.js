@@ -178,11 +178,11 @@ const TableFlats = ({ type ,  user}) => {
   console.log(flats)
 
   return (
-    <>
+    <div className="flex">
       {type === "all-flats" && (
         <Box
           textAlign={"center"}
-          sx={{ width: "60%", marginLeft: "20%", marginTop: "50px", display: 'flex' }}
+          sx={{ width: "60%", marginLeft: "20%", marginTop: "50px" }}
           component={"form"}
           boxShadow={3}
           p={4}
@@ -457,7 +457,7 @@ const TableFlats = ({ type ,  user}) => {
 }
       </div>
       )}
-    </>
+    </div>
   );
 };
 
