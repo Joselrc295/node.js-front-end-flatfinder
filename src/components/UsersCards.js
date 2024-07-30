@@ -97,6 +97,7 @@ export default function UsersCards() {
 
   const handlePageChange = (event, value) => {
     setPage(value);
+    console.log(value)
   };
 
   useEffect(() => {
