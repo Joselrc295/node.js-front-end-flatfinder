@@ -128,7 +128,7 @@ const ResetPassword = () => {
                 ),
               }}
             />
-            <Button type="submit" fullWidth variant="contained" color="primary">
+            <Button type="submit" fullWidth variant="contained" color="secondary">
               Reset Password
             </Button>
           </Stack>

@@ -138,7 +138,7 @@ export default function UsersCards() {
           display="flex"
           alignItems="center"
           justifyContent="space-between"
-         className="shadow-lg w-full max-w-5xl backdrop-blur-sm bg-white/30 rounded-lg p-7"
+          className=" shadow-lg w-full max-w-5xl backdrop-blur-sm bg-white/30 rounded-lg p-7"
         
           component={"form"}
           sx={{

@@ -20,7 +20,6 @@ export default function Users() {
       }, []);
       return (
         <div>
-         
           <div
             style={{
               backgroundImage: `url(${flatsImage})`,
