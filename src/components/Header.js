@@ -3,8 +3,8 @@ import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import MenuTransitions from "./MenuTransition";
 import { getUserLogged } from "../services/users";
-import ApartmentIcon from "@mui/icons-material/Apartment";
 import { Link } from "react-router-dom";
+import "../../src/services/style.css";
 
 export default function Header() {
   const userId = localStorage.getItem("user_logged") || false;
@@ -27,14 +27,14 @@ export default function Header() {
 
   return (
     <div>
-      <AppBar position="sticky" className="backdrop-blur-sm bg-white/30 shadow-md" >
+      <AppBar position="sticky" className="backdrop-blur-sm bg-white/30 shadow-md">
         <Toolbar className="flex justify-between items-center p-4">
           <div className="flex items-center space-x-3">
             <Link to="/dashboard">
-              <ApartmentIcon sx={{ fontSize: 40, color: 'text.primary' }} />
-            </Link>
-            <Link to="/dashboard" className="text-2xl font-semibold text-gray-900">
-              Flat Finder
+              <button className="unique-button" data-text="Flat Finder">
+                <span className="actual-text">&nbsp;Flat Finder&nbsp;</span>
+                <span aria-hidden="true" className="unique-hover-text">&nbsp;Flat Finder&nbsp;</span>
+              </button>
             </Link>
           </div>
           <div className="flex items-center space-x-4">

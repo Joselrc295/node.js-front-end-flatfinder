@@ -74,7 +74,7 @@ const ForgotPassword = () => {
               autoComplete="email"
               onChange={(e) => setEmail(e.target.value)}
             />
-            <Button type="submit" fullWidth variant="contained" color="secondary" >
+            <Button type="submit" fullWidth variant="contained" className="bg-gradient-to-r from-[#1f0e42] to-[#7946d0]" >
               Send Reset Token
             </Button>
           </Stack>
