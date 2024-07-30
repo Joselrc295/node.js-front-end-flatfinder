@@ -64,13 +64,13 @@ export default function MenuTransitions({ user, setUser }) {
 
   const avatarUrl = user?.avatar ? `http://localhost:3001${user.avatar.replace(/\\/g, '/')}` : "/broken-image.jpg";
 
-  return (
-    <Dropdown>
-      <MenuButton>
+  return (  
+    <Dropdown >
+      <MenuButton className="backdrop-blur-sm bg-white/25">
         <div
           id="dropdownAvatarNameButton"
           data-dropdown-toggle="dropdownAvatarName"
-          className="flex items-center text-sm font-medium rounded-full md:me-0 text-gray-900"
+          className="flex items-center text-sm font-medium rounded-full md:me-0 text-gray-900 "
         >
           <Avatar src={avatarUrl} className="m-2" />
           {user && (
@@ -96,7 +96,7 @@ export default function MenuTransitions({ user, setUser }) {
           </svg>
         </div>
       </MenuButton>
-      <Menu slots={{ listbox: AnimatedListbox }} style={{ zIndex: 1301 }}>
+      <Menu slots={{ listbox: AnimatedListbox }} style={{ zIndex: 1301 }} >
         <MenuItem onClick={createHandleMenuClick("Home")}>
           <HomeIcon className="mr-2" /> Home
         </MenuItem>

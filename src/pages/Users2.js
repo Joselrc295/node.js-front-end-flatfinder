@@ -3,7 +3,6 @@ import UsersCards from "../components/UsersCards";
 import { getUserLogged } from "../services/users";
 import { useEffect } from "react";
 import flatsImage from "../Imagenes/flats2.jpeg";
-import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 export default function Users() {
@@ -19,9 +18,6 @@ export default function Users() {
   }, []);
   return (
     <div>
-      <div style={{ position: "relative", zIndex: 1301 }}>
-        <Header />
-      </div>
       <div
         style={{
           backgroundImage: `url(${flatsImage})`,
@@ -30,12 +26,14 @@ export default function Users() {
           minHeight: "100vh",
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
+          
           justifyContent: "flex-start",
-          paddingTop: "20px",
           zIndex: -2,
         }}
       >
+        <div style={{ position: "relative", zIndex: 1301, alignSelf: "stretch" }}>
+            <Header />
+          </div>
         <div
           style={{
             zIndex: 1,

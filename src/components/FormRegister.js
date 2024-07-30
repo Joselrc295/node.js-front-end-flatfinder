@@ -414,7 +414,7 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
           padding: 4, // Agregar padding si es necesario
           borderRadius: 1,
         }}
-        className="backdrop-blur-sm bg-white/30 rounded-lg"
+        className="backdrop-blur-sm bg-white/45 rounded-lg"
       >
         {showAlert && (
           <Stack sx={{ width: "100%" }} spacing={2} mb={2}>
@@ -591,9 +591,10 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
                   <Button
                     variant="contained"
                     component="span"
-                    className= "text-white"
+                    className= "text-white bg-gradient-to-r from-[#1f0e42] to-[#7946d0]"
                     startIcon={<PhotoCamera />}
                     disabled={type === "view"}
+                    
                   >
                     {type === "update" ? "Update Avatar" : "Upload Avatar"}
                   </Button>
@@ -620,6 +621,7 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
+                className="bg-gradient-to-r from-[#1f0e42] to-[#7946d0]"
               >
                 {nameButton}
               </Button>
@@ -627,7 +629,7 @@ export default function FormRegister({ type, onSuccessRedirect, userId }) {
             <Grid container justifyContent="flex-end">
               <Grid item>
                 {type === "create" && (
-                  <Link className="text-[#afceec]" href="/" variant="body2">
+                  <Link className="text-[#7946d0]" href="/" variant="body2">
                     Already have an account? Sign in
                   </Link>
                 )}
