@@ -11,6 +11,7 @@ import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
 import Pagination from '@mui/material/Pagination';
 import DeleteIcon from '@mui/icons-material/Delete';
+import Grid from '@mui/material/Grid'
 
 
 
@@ -52,7 +53,7 @@ const FlatCards = ({type , user}) =>{
       }
       if (type === "all-flats") {
           let allFlats = [] ;
-          let filter = `page=${currentPage}&limit=5&filter[status]=${true}`
+          let filter = `page=${currentPage}&limit=6&filter[status]=${true}`
           if(city){
           if(filter){
           filter += '&'
@@ -250,6 +251,7 @@ const FlatCards = ({type , user}) =>{
           </TextField>
       </Box>
     }
+    <Grid container spacing={0}>
     {flats.map((row, index)=>{
         const fav = favorite.filter(item => item.flatID == row._id)
         if(fav.length){
@@ -259,24 +261,31 @@ const FlatCards = ({type , user}) =>{
         }
         console.log(row)
     return(
-        <div className="lg:mx-[30%] flex bg-black border border-gray-200 rounded-lg shadow dark:bg-gray-800  dark:border-gray-700 lg:w-[40%] m-[5%] w-[90%] ">
+      <Grid   item xs={12} sm={6} key={row._id}>
+        <div className="flex bg-black border border-gray-200 rounded-lg shadow dark:bg-gray-800  dark:border-gray-700 lg:w-[80%] m-[5%] w-[90%] ">
           {type === "favorite-flats" && 
-          <IconButton color="secondary" onClick={() => removeFavorite(row._id)} className="h-[10px] m-0 ml-[-10px] relative">
-              <FavoriteIcon/>
-          </IconButton>
+          <button
+        className="remove-button"
+        onClick={() => removeFavorite(row._id)}
+      ><FavoriteIcon sx={{color: "white"}}/>
+      </button>
          }
           
           {row.favorite && 
-          <IconButton color="secondary" onClick={() => removeFavorite(row._id)} className="h-[10px] m-0 ml-[-10px] relative">
-              <FavoriteIcon/>
-          </IconButton>
+          <button
+          className="remove-button"
+          onClick={() => removeFavorite(row._id)}
+        ><FavoriteIcon sx={{color: "white"}}/>
+        </button>
          }
           {type === "all-flats" && !row.favorite &&
-          <IconButton color="secondary" onClick={() => addFavorite(row._id)} className="h-[10px] m-0 ml-[-10px] relative">
-              <FavoriteBorderIcon/>
-          </IconButton>
+          <button
+          className="add-button"
+          onClick={() => addFavorite(row._id)}
+        ><FavoriteBorderIcon sx={{color: "white"}}/>
+        </button>
          }
-            <img className="rounded-t-lg w-[50%] ml-[-31px]" 
+            <img className="rounded-t-lg w-[50%] ml-[-40px]" 
             src={
                 row.image
                   ? `http://localhost:3001${row.image.replace(/\\/g, "/")}`
@@ -284,38 +293,94 @@ const FlatCards = ({type , user}) =>{
               }
             alt="" />
         <div className="w-[50%]">
-        <div className="flex  md:ml-[180px] relative mt-[-10px] lg:ml-[-10.8px] sm:ml-[10px]">
-        <IconButton color='secondary'  href={`/flat/${row._id}`}>
-            <VisibilityIcon/>
-        </IconButton>
-      { type === 'my-flats' &&
-        <IconButton color='secondary' href={`/flat/edit/${row._id}`}>
-            <EditIcon/>
-        </IconButton>
-      }
-      { type === 'all-flats' && user.role === 'admin'&&
-        <IconButton color='secondary' href={`/flat/edit/${row._id}`}>
-            <EditIcon/>
-        </IconButton>
-      }
-      { type === 'all-flats' && user.role === 'admin' &&
-      <IconButton color='secondary' onClick={() => removeFlatAdmin(row._id)}>
-          <DeleteIcon/>
-      </IconButton>
-      }
-      { type ==='my-flats' &&
-      <IconButton color='secondary' onClick={() => removeFlat(row._id)}>
-          <DeleteIcon/>
-      </IconButton>
-      }
-      </div>
-          <h5 className="mt-[-10px] text-center m-0 text-2xl font-bold text-violet-600 dark:text-white">{row.city}</h5>
+          <h5 className="mt-[10px] text-center m-0 text-2xl font-bold text-violet-600 dark:text-white">{row.city}</h5>
           <p class="text-center font-normal text-white dark:text-gray-400 truncate">Street: {row.streetName}<br/> Price: {row.rentPrice}<br/> Area size: {row.areaSize} <br/> Street number: {row.streetNumber}</p>
           <p className="text-white mb-0 mx-[2.5%] sm:text-xs sm:mr-[30px] truncate" >Owner: {row.flatCreatorEmail}</p>
+          <div className="flex  md:ml-[180px] relative lg:ml-[-8px] sm:ml-[10px]">
+          <button
+        className="view-button"
+        onClick={() =>
+          (window.location.href = `flat/${row._id}`)
+        }
+      ><VisibilityIcon sx={{color: "white"}}/>
+      </button>
+      { type === 'my-flats' &&
+        <button
+        className="edit-button"
+        onClick={() =>
+          (window.location.href = `flat/edit/${row._id}`)
+        }
+      >
+        <svg className="edit-svgIcon" viewBox="0 0 512 512">
+          <path d="M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l23-78.1c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1v32c0 8.8 7.2 16 16 16h32zM362.7 18.7L348.3 33.2 325.7 55.8 314.3 67.1l33.9 33.9 62.1 62.1 33.9 33.9 11.3-11.3 22.6-22.6 14.5-14.5c25-25 25-65.5 0-90.5L453.3 18.7c-25-25-65.5-25-90.5 0zm-47.4 168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z"></path>
+        </svg>
+      </button>
+      }
+      { type === 'all-flats' && user.role === 'admin'&&
+        <button
+        className="edit-button"
+        onClick={() =>
+          (window.location.href = `flat/edit/${row._id}`)
+        }
+      >
+        <svg className="edit-svgIcon" viewBox="0 0 512 512">
+          <path d="M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l23-78.1c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1v32c0 8.8 7.2 16 16 16h32zM362.7 18.7L348.3 33.2 325.7 55.8 314.3 67.1l33.9 33.9 62.1 62.1 33.9 33.9 11.3-11.3 22.6-22.6 14.5-14.5c25-25 25-65.5 0-90.5L453.3 18.7c-25-25-65.5-25-90.5 0zm-47.4 168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z"></path>
+        </svg>
+      </button>
+      }
+      { type === 'all-flats' && user.role === 'admin' &&
+      <button
+      className="Btn"
+      onClick={(e) => {
+        e.preventDefault();
+        removeFlatAdmin(row._id);
+      }}
+    >
+      <div className="sign">
+        <svg
+          viewBox="0 0 16 16"
+          className="bi bi-trash3-fill"
+          fill="currentColor"
+          height="18"
+          width="18"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5"></path>
+        </svg>
+      </div>
+      <div className="text">Delete</div>
+    </button>
+      }
+      { type ==='my-flats' &&
+       <button
+       className="Btn"
+       onClick={(e) => {
+         e.preventDefault();
+         removeFlat(row._id);
+       }}
+     >
+       <div className="sign">
+         <svg
+           viewBox="0 0 16 16"
+           className="bi bi-trash3-fill"
+           fill="currentColor"
+           height="18"
+           width="18"
+           xmlns="http://www.w3.org/2000/svg"
+         >
+           <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5"></path>
+         </svg>
+       </div>
+       <div className="text">Delete</div>
+     </button>
+      }
+      </div>
         </div>
     </div>
-    )
+    </Grid>)
     })}
+    </Grid>
+    
     <Stack spacing={2} className="my-4 align-middle">
         <Pagination
           count={totalPages}
@@ -326,6 +391,7 @@ const FlatCards = ({type , user}) =>{
             ul: 'pagination'
           }}
         />
+      
       </Stack>
     
     </div>

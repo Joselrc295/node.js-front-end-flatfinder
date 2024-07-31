@@ -126,8 +126,9 @@ export default function FlatForm({ type, id,setOwnerId}) {
       formData.append('yearBuilt', yearBuilt.current.value)
       formData.append('rentPrice', parseInt(rentPrice.current.value))
       formData.append('dateAvailable', dateAvailable.current.value)
+      if(selectedFile){
       formData.append('image', selectedFile)
-    
+      }
     ;
 
     try {
