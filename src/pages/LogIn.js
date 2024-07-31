@@ -208,7 +208,7 @@ export default function LogIn() {
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
                 disabled={isProgress}
-                className="bg-gradient-to-r from-[#1f0e42] to-[#7946d0]"
+                className="bg-gradient-to-r from-[#1f0e42] to-[#7946d0] "
               >
                 Log In
               </Button>
