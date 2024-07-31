@@ -212,7 +212,7 @@ export default function LogIn() {
               >
                 Log In
               </Button>
-              <button
+              <Button
                 className="signin"
                 onClick={handleGoogleSignIn}
               >
@@ -239,7 +239,7 @@ export default function LogIn() {
                   ></path>
                 </svg>
                 Sign in with Google
-              </button>
+              </Button>
               <Grid container>
                 <Grid item>
                   <Link className="text-[#fbfdff]" href="/sign-up" variant="body2">
