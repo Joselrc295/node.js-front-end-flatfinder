@@ -45,14 +45,15 @@ export default function Profile() {
             <div
                 style={{
                     backgroundImage: `url(${flatsImage})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    flexGrow: 1,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    paddingTop: '64px' // Ajusta este valor según la altura de tu header
-                }}
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    minHeight: "100vh",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "flex-start",
+                    zIndex: -2,
+                  }}
             >
                 <ThemeProvider theme={defaultTheme}>
                     <Container component="main" maxWidth="xs">

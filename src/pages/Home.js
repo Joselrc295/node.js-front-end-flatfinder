@@ -5,7 +5,7 @@ import { getUserLogged } from "../services/users";
 import { useState } from "react";
 import { useEffect } from "react";
 import { FlatCards } from "../components/FlatCards";
-import flatsImage from "../Imagenes/flats2.jpeg";
+import flatsImage from "../Imagenes/flats2.jpeg"
 
 
 
@@ -25,21 +25,23 @@ export default function Home(){
       }, []);
     return (
       <div>
-        <Header/>
+        
         <div
-        style={{
-          backgroundImage: `url(${flatsImage})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          minHeight: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "flex-start",
-          paddingTop: "20px",
-          zIndex: -2,
-        }}
+       style={{
+        backgroundImage: `url(${flatsImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        zIndex: -2,
+      }}
         >
+          <div style={{ position: "relative", zIndex: 1301, alignSelf: "stretch" }}>
+            <Header />
+          </div>
         <FlatCards type="all-flats" user={user}/>
         </div>
         </div>

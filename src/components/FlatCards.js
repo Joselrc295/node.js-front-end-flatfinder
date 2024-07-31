@@ -133,7 +133,9 @@ const FlatCards = ({type , user}) =>{
           component={"form"}
           boxShadow={3}
           p={4}
-          borderRadius={4}>
+          borderRadius={4}
+          className="backdrop-blur-sm bg-white/30 rounded-lg p-7">
+          
         <TextField
             label="City"
             variant="outlined"

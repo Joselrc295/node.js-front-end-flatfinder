@@ -4,19 +4,15 @@ import { db } from "../Firebase";
 import { Box, Button, TextField } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
 import Api from "../services/api";
-import whatsapp from "../Imagenes/1659719353_1-kartinkin-net-p-zastavka-dlya-messendzhera-krasivo-1.jpg"
-import iconMessenger from "../Imagenes/32196425-b3e7e484-bdd1-11e7-92ef-b65c5eb8b307.png"
+import whatsapp from "../Imagenes/1659719353_1-kartinkin-net-p-zastavka-dlya-messendzhera-krasivo-1.jpg";
+import iconMessenger from "../Imagenes/32196425-b3e7e484-bdd1-11e7-92ef-b65c5eb8b307.png";
 
-export default function Messages({ flatId }) {  
-  const ref = doc(db, "flats", flatId);
-  // const refMessages = collection(db, "messages");
+export default function Messages({ flatId, userId, flatOwnerId }) {
   const api = new Api();
 
-  const [flat, setFlat] = useState({});
   const [messages, setMessages] = useState([]);
   const [responseInput, setResponseInput] = useState("");
   const messageInput = useRef("");
-  const userId = JSON.parse(localStorage.getItem("user_data_logged")).id;
   const messagesContainerRef = useRef(null);
   const messagesEndRef = useRef(null);
 
@@ -29,16 +25,9 @@ export default function Messages({ flatId }) {
     }
   };
 
-  const getFlat = async () => {
-    const dataFlat = await getDoc(ref);
-    const responseFlat = { ...dataFlat.data() };
-    setFlat(responseFlat);
-    await getMessages();
-  };
-
   useEffect(() => {
     if (flatId) {
-      getFlat();
+      getMessages();
     }
 
     const intervalId = setInterval(() => {
@@ -105,23 +94,19 @@ export default function Messages({ flatId }) {
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="w-full max-w-4xl h-[80vh] p-4 bg-white bg-opacity-90 rounded-lg flex flex-col">
-      <div className="flex justify-center items-center mb-4">
+        <div className="flex justify-center items-center mb-4">
           <img src={iconMessenger} alt="Messenger" className="h-16" />
         </div>
         <div
-          className="flex-grow overflow-auto p-4  rounded-lg mb-4"
+          className="flex-grow overflow-auto p-4 rounded-lg mb-4"
           ref={messagesContainerRef}
-          style={{ scrollbarWidth: 'thin', scrollbarColor: '#CBD5E0 #EDF2F7',backgroundImage: `url(${whatsapp})`, backgroundSize: 'cover' }}
-         
+          style={{ scrollbarWidth: 'thin', scrollbarColor: '#CBD5E0 #EDF2F7', backgroundImage: `url(${whatsapp})`, backgroundSize: 'cover' }}
         >
           {messages.map((item) => {
             const messageTime = new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const messageDate = new Date(item.createdAt).toLocaleDateString();
-            let isCurrentUser = false;
-            if (item.userID) {
-              isCurrentUser = item.userID._id === userId;
-            }
-            console.log("aqui", item, isCurrentUser, userId);
+            const isCurrentUser = item.userID && item.userID._id === userId;
+            const isOwner = item.userID && item.userID._id === flatOwnerId;
+
             return (
               <div
                 key={item._id}
@@ -131,7 +116,7 @@ export default function Messages({ flatId }) {
                   <div className={`
                     rounded-lg p-3 
                     ${isCurrentUser
-                      ? 'bg-[#5e98ee] text-black rounded-tr-none shadow-md'
+                      ? 'bg-blue-500 text-white rounded-tr-none shadow-md'
                       : 'bg-white text-black rounded-tl-none shadow-md'
                     }
                     relative
@@ -140,15 +125,17 @@ export default function Messages({ flatId }) {
                     <div className={`
                       absolute w-4 h-4 
                       ${isCurrentUser
-                        ? 'right-0 -mr-2 top-0 bg-[#5e98ee] shadow-md'
+                        ? 'right-0 -mr-2 top-0 bg-blue-500 shadow-md'
                         : 'left-0 -ml-2 top-0 bg-white shadow-md'
                       }
                       transform rotate-45
                     `}></div>
                   </div>
                   <div className={`text-xs mt-1 ${isCurrentUser ? 'text-right' : 'text-left'}`}>
-                    <span className="text-white font-semibold mr-2">{item.userID ? item.userID.firstName : 'Unknown'}</span>
-                    <span className="text-white font-semibold">{messageTime}</span>
+                    <span className="text-gray-500 font-semibold mr-2">
+                      {isOwner ? 'Owner' : item.userID ? item.userID.firstName : 'Unknown'}
+                    </span>
+                    <span className="text-gray-500 font-semibold">{messageTime}</span>
                   </div>
                 </div>
               </div>
@@ -176,25 +163,14 @@ export default function Messages({ flatId }) {
             }}
             onKeyDown={handleKeyDown}
           />
-          {flat.user !== userId ? (
-            <Button
-              type="submit"
-              className="bg-[#1c1b2e] hover:bg-[#070b2f] text-white font-bold py-2 px-4 rounded-full transition duration-200 ease-in-out"
-              variant="contained"
-              endIcon={<SendIcon />}
-            >
-              Send
-            </Button>
-          ) : (
-            <Button
-              onClick={handleResponseSubmit}
-              className="bg-[#1c1b2e] hover:bg-[#070b2f] text-white font-bold py-2 px-4 rounded-full transition duration-200 ease-in-out"
-              variant="contained"
-              endIcon={<SendIcon />}
-            >
-              Reply
-            </Button>
-          )}
+          <Button
+            type="submit"
+            className="bg-blue-600 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded-full transition duration-200 ease-in-out"
+            variant="contained"
+            endIcon={<SendIcon />}
+          >
+            Send
+          </Button>
         </Box>
       </div>
     </div>

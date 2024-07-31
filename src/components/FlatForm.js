@@ -28,7 +28,7 @@ const VisuallyHiddenInput = styled('input')({
 });
 
 
-export default function FlatForm({ type, id }) {
+export default function FlatForm({ type, id,setOwnerId}) {
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState(null);
   const [alertMessage, setAlertMessage] = useState("");
@@ -44,6 +44,8 @@ export default function FlatForm({ type, id }) {
     yearBuilt: "",
     rentPrice: "",
     dateAvailable: currentDate,
+    ownerID : "",
+
   });
 
   const navigate = useNavigate();
@@ -154,6 +156,7 @@ export default function FlatForm({ type, id }) {
       const result = await api.get(`flats/${id}`);
       setFlat(result.data.data);
       setFlatLoaded(true);
+      setOwnerId(result.data.data.ownerID);
     } catch (error) {
       showAlertMessage("error", "Failed to load flat data.");
     }
@@ -264,6 +267,7 @@ export default function FlatForm({ type, id }) {
                 required
               />
             </Grid>
+           
             <Grid item xs={12} sm={6}>
               <FormControlLabel
                 control={

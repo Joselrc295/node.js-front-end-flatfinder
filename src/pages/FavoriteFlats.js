@@ -17,8 +17,7 @@ const FavoriteFlats = () =>{
         checkUserLogged();
       }, []);
     return(
-    <>
-    <Header/>
+    <div>    
     <div
     style={{
       backgroundImage: `url(${flatsImage})`,
@@ -29,13 +28,15 @@ const FavoriteFlats = () =>{
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "flex-start",
-      paddingTop: "20px",
       zIndex: -2,
     }}
     >
+       <div style={{ position: "relative", zIndex: 1301, alignSelf: "stretch" }}>
+            <Header />
+          </div>
     <FlatCards type= {'favorite-flats'}/>
     </div>
-    </>
+    </div>
     )
 }
 

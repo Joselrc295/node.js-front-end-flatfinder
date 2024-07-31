@@ -26,21 +26,24 @@ const MyFlats = () =>{
       
     return(
     <>
-    <Header/>
     <div 
-        style={{
-          backgroundImage: `url(${flatsImage})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          minHeight: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "flex-start",
-          paddingTop: "20px",
-          zIndex: -2,
-        }}
+      style={{
+        backgroundImage: `url(${flatsImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        zIndex: -2,
+      }}
         >
+          <div
+          style={{ position: "relative", zIndex: 1301, alignSelf: "stretch" }}
+        >
+          <Header />
+        </div>
     <FlatCards type={'my-flats'}/>
     <br></br>
     <br></br>
