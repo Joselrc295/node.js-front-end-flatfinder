@@ -38,10 +38,7 @@ export default function Profile() {
     };
 
     return (
-        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', zIndex: 1301 }}>
-                <ResponsiveAppBar />
-            </div>
+        <div >
             <div
                 style={{
                     backgroundImage: `url(${flatsImage})`,
@@ -55,12 +52,15 @@ export default function Profile() {
                     zIndex: -2,
                   }}
             >
+                <div style={{ position: "relative", zIndex: 1301, alignSelf: "stretch" }}>
+                <ResponsiveAppBar />
+            </div>
                 <ThemeProvider theme={defaultTheme}>
                     <Container component="main" maxWidth="xs">
                         <CssBaseline />
                         <Box
                             sx={{
-                                marginTop: 8,
+                                marginTop: 10,
                                 display: 'flex',
                                 flexDirection: 'column',
                                 alignItems: 'center',

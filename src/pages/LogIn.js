@@ -14,20 +14,17 @@ import { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth"; // Importa Firebase Auth
 import Api from "../services/api";
 import flatsImage from "../Imagenes/flats2.jpeg";
 
+// Definición del componente Copyright
 function Copyright(props) {
   return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
+    <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {"Copyright © "}
       <Link color="inherit" href="https://mui.com/">
-        Flat finder
+        Flat Finder
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
@@ -47,7 +44,7 @@ export default function LogIn() {
   const [alertMessage, setAlertMessage] = useState("");
 
   useEffect(() => {
-    const isAuthenticated = localStorage.getItem('user_logged');
+    const isAuthenticated = localStorage.getItem("user_logged");
     if (isAuthenticated) {
       navigate("/dashboard", { replace: true });
     }
@@ -78,10 +75,7 @@ export default function LogIn() {
         console.log("login successful");
         showAlertMessage("success", "Login successful");
         localStorage.setItem("user_logged", result.data.token);
-        localStorage.setItem(
-          "user_data_logged",
-          JSON.stringify(result.data.data)
-        );
+        localStorage.setItem("user_data_logged", JSON.stringify(result.data.data));
         setTimeout(() => {
           navigate("/dashboard", { replace: true });
         }, 2000); // Redirigir al dashboard después de 2 segundos
@@ -91,12 +85,44 @@ export default function LogIn() {
       }
     } catch (error) {
       console.log(error);
-      showAlertMessage(
-        "error",
-        error.response?.data?.message || "An error occurred during login"
-      );
+      showAlertMessage("error", error.response?.data?.message || "An error occurred during login");
     } finally {
       setIsProgress(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    const auth = getAuth();
+    const provider = new GoogleAuthProvider();
+
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // Aquí llamarías a tu backend para registrar/validar el usuario
+      const api = new Api();
+      const response = await api.post("users/google-login", {
+        email: user.email,
+        firstName: user.displayName.split(" ")[0],
+        lastName: user.displayName.split(" ")[1] || "",
+        avatar: user.photoURL
+      });
+
+      if (response.data.status === "success") {
+        console.log("login successful");
+        showAlertMessage("success", "Login successful");
+        localStorage.setItem("user_logged", response.data.token);
+        localStorage.setItem("user_data_logged", JSON.stringify(response.data.data));
+        setTimeout(() => {
+          navigate("/dashboard", { replace: true });
+        }, 2000);
+      } else {
+        console.log("login failed");
+        showAlertMessage("error", "Google sign-in failed");
+      }
+    } catch (error) {
+      console.error("Google sign-in error:", error);
+      showAlertMessage("error", "An error occurred during Google sign-in");
     }
   };
 
@@ -141,10 +167,7 @@ export default function LogIn() {
             >
               {showAlert && (
                 <Stack sx={{ width: "100%" }} spacing={2} mb={2}>
-                  <Alert
-                    severity={alertSeverity}
-                    onClose={() => setShowAlert(false)}
-                  >
+                  <Alert severity={alertSeverity} onClose={() => setShowAlert(false)}>
                     {alertMessage}
                   </Alert>
                 </Stack>
@@ -185,9 +208,37 @@ export default function LogIn() {
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
                 disabled={isProgress}
-                className="bg-gradient-to-r from-[#1f0e42] to-[#7946d0]"
+                className="bg-gradient-to-r from-[#1f0e42] to-[#7946d0] "
               >
                 Log In
+              </Button>
+              <Button
+                className="signin"
+                onClick={handleGoogleSignIn}
+              >
+                <svg
+                  viewBox="0 0 256 262"
+                  preserveAspectRatio="xMidYMid"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"
+                    fill="#4285F4"
+                  ></path>
+                  <path
+                    d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1"
+                    fill="#34A853"
+                  ></path>
+                  <path
+                    d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82 0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602l42.356-32.782"
+                    fill="#FBBC05"
+                  ></path>
+                  <path
+                    d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"
+                    fill="#EB4335"
+                  ></path>
+                </svg>
+                Sign in with Google
               </Button>
               <Grid container>
                 <Grid item>
