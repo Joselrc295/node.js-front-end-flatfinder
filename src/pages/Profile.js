@@ -38,23 +38,23 @@ export default function Profile() {
     };
 
     return (
-        <div >
-            <div
-                style={{
-                    backgroundImage: `url(${flatsImage})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    minHeight: "100vh",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "flex-start",
-                    zIndex: -2,
-                  }}
-            >
-                <div style={{ position: "relative", zIndex: 1301, alignSelf: "stretch" }}>
+        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', zIndex: 1301 }}>
                 <ResponsiveAppBar />
             </div>
+            <div
+                 style={{
+                    backgroundImage: `url(${flatsImage})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    flexGrow: 1,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    paddingTop: '64px' // Ajusta este valor según la altura de tu header
+                }}
+            >
+                
                 <ThemeProvider theme={defaultTheme}>
                     <Container component="main" maxWidth="xs">
                         <CssBaseline />

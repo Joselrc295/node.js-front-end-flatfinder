@@ -27,8 +27,7 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 });
 
-
-export default function FlatForm({ type, id,setOwnerId}) {
+export default function FlatForm({ type, id, setOwnerId }) {
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState(null);
   const [alertMessage, setAlertMessage] = useState("");
@@ -44,8 +43,7 @@ export default function FlatForm({ type, id,setOwnerId}) {
     yearBuilt: "",
     rentPrice: "",
     dateAvailable: currentDate,
-    ownerID : "",
-
+    ownerID: "",
   });
 
   const navigate = useNavigate();
@@ -94,7 +92,7 @@ export default function FlatForm({ type, id,setOwnerId}) {
       return false;
     }
     return true;
-};
+  };
 
   const validateForm = () => {
     if (!validateCity()) return false;
@@ -118,18 +116,17 @@ export default function FlatForm({ type, id,setOwnerId}) {
     }
 
     let formData  = new FormData()
-      formData.append('city', city.current.value.trim())
-      formData.append('streetName', streetName.current.value)
-      formData.append('streetNumber', streetNumber.current.value)
-      formData.append('areaSize', parseInt(areaSize.current.value))
-      formData.append('hasAc', hasAc.current.checked)
-      formData.append('yearBuilt', yearBuilt.current.value)
-      formData.append('rentPrice', parseInt(rentPrice.current.value))
-      formData.append('dateAvailable', dateAvailable.current.value)
-      if(selectedFile){
+    formData.append('city', city.current.value.trim())
+    formData.append('streetName', streetName.current.value)
+    formData.append('streetNumber', streetNumber.current.value)
+    formData.append('areaSize', parseInt(areaSize.current.value))
+    formData.append('hasAc', hasAc.current.checked)
+    formData.append('yearBuilt', yearBuilt.current.value)
+    formData.append('rentPrice', parseInt(rentPrice.current.value))
+    formData.append('dateAvailable', dateAvailable.current.value)
+    if(selectedFile){
       formData.append('image', selectedFile)
-      }
-    ;
+    }
 
     try {
       if (type === "update") {
@@ -146,7 +143,7 @@ export default function FlatForm({ type, id,setOwnerId}) {
       showAlertMessage("error", "An error occurred while submitting the flat.");
     }
   };
-  
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file)
@@ -205,11 +202,12 @@ export default function FlatForm({ type, id,setOwnerId}) {
             </Typography>
           )}
           {type !== 'create' &&
-              <img className="w-[80%] mb-[2.5%] mx-[10%]" src={
-                flat.image
-                  ? `http://localhost:3001${flat.image.replace(/\\/g, "/")}`
-                  : "/path/to/default-avatar.jpg"
-               }  alt=""/>
+            <img className="w-[80%] mb-[2.5%] mx-[10%]" src={
+              flat.image
+                ? `http://localhost:3001${flat.image.replace(/\\/g, "/")}`
+                : "/path/to/default-avatar.jpg"
+              } alt=""
+            />
           }
           {showAlert && (
             <Alert severity={alertSeverity} sx={{ marginBottom: "24px" }}>
@@ -268,7 +266,6 @@ export default function FlatForm({ type, id,setOwnerId}) {
                 required
               />
             </Grid>
-           
             <Grid item xs={12} sm={6}>
               <FormControlLabel
                 control={
@@ -311,7 +308,6 @@ export default function FlatForm({ type, id,setOwnerId}) {
                 defaultValue={flat.dateAvailable
                   ? new Date(flat.dateAvailable).toISOString().slice(0, 10)
                   : ""}
-                
                 type="date"
                 label="Date available"
                 inputRef={dateAvailable}
@@ -322,20 +318,19 @@ export default function FlatForm({ type, id,setOwnerId}) {
               />
             </Grid>
           </Grid>
-          {type !== "view" && 
-          <Grid  className="mx-[38%] mt-[20px]">
+          {type !== "view" &&
+            <Grid className="mx-[38%] mt-[20px]">
               <Button
-              
-              color="secondary"
-              component="label"
-              variant="contained"
-              tabIndex={-1}
-              startIcon={<CloudUploadIcon />}
-            >
-              {selectedFile && <p>File selected: {selectedFile.name}</p>}
-              <VisuallyHiddenInput id='image' type="file" accept="image/*" onChange={handleFileChange} />
-            </Button>
-          </Grid>
+                color="secondary"
+                component="label"
+                variant="contained"
+                tabIndex={-1}
+                startIcon={<CloudUploadIcon />}
+              >
+                {selectedFile && <p>File selected: {selectedFile.name}</p>}
+                <VisuallyHiddenInput id='image' type="file" accept="image/*" onChange={handleFileChange} />
+              </Button>
+            </Grid>
           }
           {type !== "view" && (
             <Button
@@ -347,7 +342,6 @@ export default function FlatForm({ type, id,setOwnerId}) {
             >
               Submit
             </Button>
-          
           )}
         </>
       ) : (

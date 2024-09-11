@@ -1,26 +1,27 @@
 import FlatForm from "../components/FlatForm";
-import {useParams} from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Header from "../components/Header";
 import { getUserLogged } from "../services/users";
 import { useEffect } from "react";
 import flatsImage from "../Imagenes/flats2.jpeg";
 
 export default function FlatEdit() {
-    let  {id } = useParams()
-    useEffect(() => {
-        const checkUserLogged = async () => {
-          const userLogged = await getUserLogged();
-          if (!userLogged) {
-            window.location.href = "/";
-          }
-        };
-        checkUserLogged();
-      }, []);
-    return (
-        <div>
-          
-            <Header/>
-          <div style={{
+  let { id } = useParams();
+
+  useEffect(() => {
+    const checkUserLogged = async () => {
+      const userLogged = await getUserLogged();
+      if (!userLogged) {
+        window.location.href = "/";
+      }
+    };
+    checkUserLogged();
+  }, []);
+
+  return (
+    <div>
+      <div
+        style={{
           backgroundImage: `url(${flatsImage})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
@@ -29,12 +30,19 @@ export default function FlatEdit() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "flex-start",
-          paddingTop: "20px",
           zIndex: -2,
-        }}>
-            <h1>Flat-Update</h1>
-            <FlatForm type={'update'} id = {id}/>
-          </div>
+        }}
+      >
+        <div
+          style={{ position: "relative", zIndex: 1301, alignSelf: "stretch" }}
+        >
+          <Header />
         </div>
-    );
+        <div className="bg-white bg-opacity-80 rounded-lg px-2 py-1 shadow-lg max-w-xl w-full mt-3">
+          <h1 className="text-4xl font-bold text-center mb-4">Flat Update</h1>
+          <FlatForm type={"update"} id={id} />
+        </div>
+      </div>
+    </div>
+  );
 }

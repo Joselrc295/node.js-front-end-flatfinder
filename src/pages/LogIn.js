@@ -213,13 +213,17 @@ export default function LogIn() {
                 Log In
               </Button>
               <Button
-                className="signin"
+                fullWidth
+                variant="contained"
                 onClick={handleGoogleSignIn}
+                sx={{ mt: 1, mb: 2 }}
+                className="signin"
               >
                 <svg
                   viewBox="0 0 256 262"
                   preserveAspectRatio="xMidYMid"
                   xmlns="http://www.w3.org/2000/svg"
+                  style={{ marginRight: 8 }}
                 >
                   <path
                     d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"

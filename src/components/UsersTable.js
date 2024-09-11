@@ -98,6 +98,7 @@ export default function UsersTable() {
   const handleSort = (column) => {
     setOrderBy(column);
     setOrder(order === 1 ? -1 : 1);
+    setPage(1);  // Reset page to 1 to show sorted data from the beginning
   };
 
   const handlePageChange = (event, value) => {
