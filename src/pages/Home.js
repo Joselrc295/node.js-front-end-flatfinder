@@ -1,5 +1,5 @@
 import Header from "../components/Header";
-import { TableFlats } from "../components/Tables";
+// import { TableFlats } from "../components/Tables";
 import checkUserLogged from "../services/actions";
 import { getUserLogged } from "../services/users";
 import { useState } from "react";

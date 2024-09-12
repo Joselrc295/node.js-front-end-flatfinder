@@ -1,8 +1,8 @@
 import Header from "../components/Header";
-import UsersCards from "../components/UsersCards";
+// import UsersCards from "../components/UsersCards";
 import { getUserLogged } from "../services/users";
 import { useEffect } from "react";
-import { Button } from "@mui/material";
+// import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import flatsImage from "../Imagenes/flats2.jpeg";
 import UsersTable from "../components/UsersTable";

@@ -1,4 +1,4 @@
-import { TableFlats } from "../components/Tables";
+// import { TableFlats } from "../components/Tables";
 import Header from "../components/Header";
 import { getUserLogged } from "../services/users";
 import { useEffect } from "react";
