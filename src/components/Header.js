@@ -7,9 +7,9 @@ import { Link } from "react-router-dom";
 import "../../src/services/style.css";
 
 export default function Header() {
-  const userId = localStorage.getItem("user_logged") || false;
+  // const userId = localStorage.getItem("user_logged") || false;
   const [user, setUser] = useState(null);
-  const [userLoaded, setUserLoaded] = useState(false);
+  // const [userLoaded, setUserLoaded] = useState(false);
 
   const processData = async () => {
     await getUserData();

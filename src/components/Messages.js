@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../Firebase";
+// import { doc, getDoc } from "firebase/firestore";
+// import { db } from "../Firebase";
 import { Box, Button, TextField } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
 import Api from "../services/api";

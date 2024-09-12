@@ -6,7 +6,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Api from "../services/api";
-import { getUserLogged } from "../services/users";
+// import { getUserLogged } from "../services/users";
 
 const FlatCards = ({ type, user }) => {
     const api = new Api();

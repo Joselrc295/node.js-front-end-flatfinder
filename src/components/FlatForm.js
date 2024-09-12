@@ -56,7 +56,7 @@ export default function FlatForm({ type, id, setOwnerId }) {
   const yearBuilt = useRef("");
   const rentPrice = useRef("");
   const dateAvailable = useRef("");
-  const user = localStorage.getItem("user_logged");
+  // const user = localStorage.getItem("user_logged");
 
   const showAlertMessage = (severity, message) => {
     setAlertSeverity(severity);
